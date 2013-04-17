@@ -26,6 +26,12 @@ test(nth_5) :-
 %% sublist_n - Determinista
 
 test(sublist_n_1) :-
-        sublist_n([a,b,c], 2, [a,b]), !. %pongo esto porque esta bien tenga choicepoint.
+        sublist_n([a,b,c], 2, [a,b]), !.
+
+test(sublist_n_2, [fail]) :-
+        sublist_n([a,b,c], 3, [a,b]), !.
+
+test(sublist_n_3, [fail]) :-
+        sublist_n([a,b,c], 2, [a,c]), !.
 
 :- end_tests(lists).
