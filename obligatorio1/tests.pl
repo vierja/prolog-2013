@@ -21,7 +21,7 @@ test(nth_4, [fail]) :-
 
 test(nth_5) :-
         nth(X, 2, b),
-        nth0(1, X, b).
+        nth1(2, X, b).
 
 %% sublist_n - Determinista
 
@@ -33,5 +33,14 @@ test(sublist_n_2, [fail]) :-
 
 test(sublist_n_3, [fail]) :-
         sublist_n([a,b,c], 2, [a,c]), !.
+
+test(sublist_n_4) :-
+        sublist_n([a,b,c], 0, []), !.
+
+%% sublist_n - No Determinista
+
+test(sublist_n_5) :-
+        findall(X,  sublist_n([a,b,c], 2, X), Xs),
+        Xs = [[b,c], [a,b]].
 
 :- end_tests(lists).
