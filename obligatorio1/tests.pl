@@ -11,15 +11,15 @@ test(nth_2, [fail]) :-
 
 test(nth_3) :-
         findall(X, nth([a,b,c], 2, X), Xs),
-        Xs = [b].
+        Xs = [b], !.
 
 test(nth_4, [fail]) :-
         findall(X, nth([a,b,c], 2, X), Xs),
-        Xs = [a].
+        Xs = [a], !.
 
 test(nth_5) :-
         nth(X, 2, b),
-        nth1(2, X, b).
+        nth1(2, X, b), !.
 
 % sublist_n
 
@@ -37,9 +37,7 @@ test(sublist_n_4) :-
 
 test(sublist_n_5) :-
         findall(X,  sublist_n([a,b,c], 2, X), Xs),
-        writeln(Xs),
-        Xs = [[b,c], [a,b]].
-
+        Xs = [[b,c], [a,b]], !.
 
 % palindromo
 
@@ -63,6 +61,54 @@ test(palindromo4, [fail]) :-
 
 test(palindromo5, [fail]) :-
         palindromo([1,2,3]), !.
+
+% merge
+
+test(merge0) :-
+        merge([],[],[]), !.
+
+test(merge1) :-
+        merge([A],[],[A]), !.
+
+test(merge2) :-
+        merge([],[A],[A]), !.
+
+test(merge3) :-
+        merge([1,2,3],[4],[1,2,3,4]), !.
+
+test(merge4) :-
+        merge([1,2,3,4,5,6],[1,2,3,4,5],[1,1,2,2,3,3,4,4,5,5,6]), !.
+
+test(merge5) :-
+        merge([2,4,6],[1,3,5,7,9],[1,2,3,4,5,6,7,9]), !.
+
+test(merge6) :-
+        merge([1,3,5,7,9],[2,4,6],[1,2,3,4,5,6,7,9]), !.
+
+test(merge7) :-
+        merge([1],[1],[1,1]), !.
+
+test(merge8, [fail]) :-
+        merge([1],[2],[2,1]), !.
+
+test(merge9) :-
+        findall(X,  merge([1,6,7], [6,8,3], X), Xs),
+        Xs = [[1,6,6,7,8,3]], !.
+
+% member_sorted
+
+test(member_sorted0) :-
+        member_sorted([],[]), !.
+
+test(member_sorted1) :-
+        member_sorted([9,8,7,6,5,4,3,2,1],[1,2,3,4,5,6,7,8,9]), !.
+
+test(member_sorted2) :-
+        member_sorted([1],[1]), !.
+
+test(member_sorted3) :-
+        findall(X, member_sorted([6,42,3,5,1,99], X), Xs),
+        Xs = [[1,3,5,6,42,99]].
 
 
 :- end_tests(lists).
