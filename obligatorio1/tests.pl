@@ -110,5 +110,35 @@ test(member_sorted3) :-
         findall(X, member_sorted([6,42,3,5,1,99], X), Xs),
         Xs = [[1,3,5,6,42,99]].
 
+% permutacion
+
+test(permutacion0) :-
+        permutacion([],[]), !.
+
+test(permutacion1) :-
+        permutacion([1,6,3,2,1,7,8],[7,1,3,1,6,8,2]), !.
+
+test(permutacion3, [fail]) :-
+        permutacion([1], [1,2]), !.
+
+test(permutacion4) :-
+        findall(X, permutacion([1,2], X), Xs),
+        Xs = [[1,2], [2,1]].
+
+test(permutacion5) :-
+        findall(X, permutacion([1], X), Xs),
+        Xs = [[1]].
+
+test(permutacion6) :-
+        findall(X, permutacion([1,2,3], X), Xs),
+        Xs = [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]].
+
+% remove_elem
+
+test(remove_elem0) :-
+        remove_elem([1,2],1,[2]), !.
+
+test(remove_elem1) :-
+        remove_elem([1,2],2,[1]), !.
 
 :- end_tests(lists).

@@ -100,7 +100,22 @@ split_list([X,Y|Zs], [X|Xs], [Y|Ys]) :-
 
 /*
     permutation(+X,?Y)
-    La lista Y es una permutación de los elementos de la lista X.
+    La lista `Y` es una permutacion de los elementos de la lista `X`.
+
+    Se define como `permutacion` porque `permutation` ya existe.
 */
+
+permutacion([], []).
+permutacion(X, [Y|Ys]) :-
+        remove_elem(X, Y, Zs),
+        permutacion(Zs, Ys).
+
+% remove_elem(+L, +Elem, ?LsinElem)
+
+remove_elem([A|C], A, C).
+remove_elem([A|C], B, [A|D]) :-
+        remove_elem(C, B, D).
+
+
 
 
