@@ -61,8 +61,8 @@ palindromo(X) :-
     `L1` y `L2`.
 */
 
-merge([],[],[]).
-merge([X|Xs],[],[X|Xs]).
+merge([], [], []).
+merge([X|Xs], [], [X|Xs]).
 merge([], [X|Xs], [X|Xs]).
 merge([X|Xs], [Y|Ys], [X|Zs]) :-
         X =< Y,
@@ -82,8 +82,8 @@ merge([X|Xs], [Y|Ys], [Y|Zs]) :-
     http://en.wikipedia.org/wiki/Merge_sort
 */
 
-member_sorted([],[]).
-member_sorted([X],[X]).
+member_sorted([], []).
+member_sorted([X], [X]).
 member_sorted([X,Y|Zs], Sorted):-
         split_list([X,Y|Zs], First, Last),
         member_sorted(First, FirstSorted),
@@ -92,8 +92,8 @@ member_sorted([X,Y|Zs], Sorted):-
 
 % split_list(+L, ?S1, ?S2)
 
-split_list([],[],[]).
-split_list([A],[],[A]).
+split_list([], [], []).
+split_list([A], [], [A]).
 split_list([X,Y|Zs], [X|Xs], [Y|Ys]) :-
         split_list(Zs, Xs, Ys).
 
@@ -116,6 +116,13 @@ remove_elem([A|C], A, C).
 remove_elem([A|C], B, [A|D]) :-
         remove_elem(C, B, D).
 
+
+/*
+    selection_sort(+L,?S)
+    `S` es la lista ordenada de `L` utilizando el algoritmo de selection sort.
+*/
+
+selection_sort([], []).
 
 
 
