@@ -34,7 +34,6 @@ prefix_n([X|Xs], N, [X|Ys]) :-
         Z is N-1,
         prefix_n(Xs, Z, Ys).
 
-
 /*
     max(+L,?Max,?L1)
     `Max` es el maximo de `L`, `L1` es la lista `L` sin Max.
@@ -42,7 +41,18 @@ prefix_n([X|Xs], N, [X|Ys]) :-
 */
 
 max([X], X, []).
-%todo
+max(X, Max, L1) :-
+        max_list(X, Max),
+        remove_elem(X, Max, L1).
+
+% max_list(+L, Max)
+
+max_list([X|Xs], Max) :-
+        max_list(Xs, X, Max).
+max_list([X|Xs], Cand, Rest):-
+        X =< Cand, max_list(Xs, Cand, Rest);
+        X >  Cand, max_list(Xs, X, Rest).
+max_list([], Cand, Cand).
 
 /*
     palindromo(+L)
@@ -71,7 +81,6 @@ merge([X|Xs], [Y|Ys], [Y|Zs]) :-
         X > Y,
         merge([X|Xs], Ys, Zs).
 
-
 /*
     member_sorted(+L,+X)
     `X` es un elemento de la lista ordenada `L`, no se debe recorrer la lista
@@ -97,7 +106,6 @@ split_list([A], [], [A]).
 split_list([X,Y|Zs], [X|Xs], [Y|Ys]) :-
         split_list(Zs, Xs, Ys).
 
-
 /*
     permutation(+X,?Y)
     La lista `Y` es una permutacion de los elementos de la lista `X`.
@@ -105,24 +113,33 @@ split_list([X,Y|Zs], [X|Xs], [Y|Ys]) :-
     Se define como `permutacion` porque `permutation` ya existe.
 */
 
-permutacion([], []).
-permutacion(X, [Y|Ys]) :-
-        remove_elem(X, Y, Zs),
-        permutacion(Zs, Ys).
-
 % remove_elem(+L, +Elem, ?LsinElem)
 
 remove_elem([A|C], A, C).
 remove_elem([A|C], B, [A|D]) :-
         remove_elem(C, B, D).
 
+permutacion([], []).
+permutacion(X, [Y|Ys]) :-
+        remove_elem(X, Y, Zs),
+        permutacion(Zs, Ys).
 
 /*
     selection_sort(+L,?S)
     `S` es la lista ordenada de `L` utilizando el algoritmo de selection sort.
 */
 
+% min(+L, ?Min)
+
+min([X|Xs], Min) :-
+        min(Xs, X, Min).
+min([X|Xs], Cand, Rest):-
+        X >= Cand, min(Xs, Cand, Rest);
+        X <  Cand, min(Xs, X, Rest).
+min([], Cand, Cand).
+
 selection_sort([], []).
-
-
-
+selection_sort(X, [Y|Ys]) :-
+    min(X, Y),
+    remove_elem(X, Y, Zs),
+    selection_sort(Zs, Ys).

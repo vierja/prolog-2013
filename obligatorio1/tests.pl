@@ -39,6 +39,46 @@ test(sublist_n_5) :-
         findall(X,  sublist_n([a,b,c], 2, X), Xs),
         Xs = [[b,c], [a,b]], !.
 
+% max_list
+
+test(max_list0, [fail]) :-
+        max_list([],[]), !.
+
+test(max_list1) :-
+        max_list([1,4,7], 7), !.
+
+test(max_list2) :-
+        max_list([7,4,1,4], 7), !.
+
+test(max_list3) :-
+        findall(X, max_list([9876,222,3435,23523], X), Xs),
+        Xs = [23523].
+
+% max (de la tarea)
+
+test(max4) :-
+        max([2,4,3], 4, [2,3]), !.
+
+test(max5) :-
+        max([2,4,3,4,7], 7, [2,4,3,4]), !.
+
+test(max6) :-
+        max([2,2,2,2,2,2,2], 2, [2,2,2,2,2,2]), !.
+
+test(max7, [fail]) :-
+        max([1,2,3], 2, [1,3]), !.
+
+test(max7, [fail]) :-
+        max([1,2,3], 2, [1,3]), !.
+
+test(max8) :-
+        findall(X, max([6,5,3,8,9,10,6,8], X, _), Xs),
+        Xs = [10].
+
+test(max9) :-
+        findall(X, max([6,5,3,8,9,10,6,8], _, X), Xs),
+        Xs = [[6,5,3,8,9,6,8]].
+
 % palindromo
 
 test(palindromo0) :-
@@ -140,5 +180,43 @@ test(remove_elem0) :-
 
 test(remove_elem1) :-
         remove_elem([1,2],2,[1]), !.
+
+
+% min
+
+test(min0, [fail]) :-
+        min([],[]), !.
+
+test(min1) :-
+        min([1,4,7], 1), !.
+
+test(min2) :-
+        min([7,4,1,4], 1), !.
+
+test(min3) :-
+        findall(X, min([9876,222,3435,23523], X), Xs),
+        Xs = [222].
+
+% selection_sort
+
+test(selection_sort0) :-
+        selection_sort([1,2,3,4], [1,2,3,4]), !.
+
+test(selection_sort1) :-
+        selection_sort([8,7,6,5,4,3], [3,4,5,6,7,8]), !.
+
+test(selection_sort2) :-
+        selection_sort([],[]), !.
+
+test(selection_sort3) :-
+        findall(X, selection_sort([1,6,4,2,5,3], X), Xs),
+        Xs = [[1,2,3,4,5,6]].
+
+test(selection_sort4) :-
+        selection_sort([1,1,1,1,1], [1,1,1,1,1]), !.
+
+test(selection_sort5) :-
+        findall(X, selection_sort([1], X), Xs),
+        Xs = [[1]].
 
 :- end_tests(lists).
