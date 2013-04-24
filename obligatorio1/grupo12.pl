@@ -142,8 +142,11 @@ selection_sort(X, [Y|Ys]) :-
     min(X, Y),
     remove_elem(X, Y, Zs),
     selection_sort(Zs, Ys).
-
-//=======================================matrix=======================================//
+/*
+    matrix(+X,+Y,+Val,?M)
+    M es una matriz de X filas e Y columnas. Cada celda debe tener el valor Val.
+    La matriz se representa mediante una lista de X filas, donde cada fila es una lista de Y celdas. 
+*/
 matrix(0, _, _, []).
 matrix(_, 0, _, []).
 matrix(X, Y, Val, [H|T])  :- succ(W,Y),member_length(X, Val, H),matrix(X, W, Val, T).
@@ -153,10 +156,16 @@ member_length(0, _, []).
 member_length(X, Aux, [Aux| T ]) :- succ(Z,X),member_length(Z, Aux, T).
 
 
-//===================================select_column====================================//
+/*
+    select_column(?M,?C,?MRest)
+    C es la primera columna de la matriz M, MRest es la matriz M sin su primera columna.
+*/
 select_column([],[],[]).
 select_column([[A|R]|T], [H|Tc], [Hr|Tr]) :- A==H, R==Hr, select_column(T, Tc, Tr).
 
 
-//===================================symmetric========================================//
+/*
+    symmetric(+M)
+    M es una matriz simétrica.
+*/
 symmetric(M) :- transpose(M,M).
