@@ -169,3 +169,35 @@ select_column([[A|R]|T], [H|Tc], [Hr|Tr]) :- A==H, R==Hr, select_column(T, Tc, T
     M es una matriz simétrica.
 */
 symmetric(M) :- transpose(M,M).
+
+/*
+    get_cell(+X,+Y,+M,-Val)
+    Devuelve en Val el contenido de la celda en la fila X y la columna Y de la matrix M..
+*/
+get_cell(1, 1, [[H3|_]|_], H3).
+get_cell(1, Y, [[_|T2]|T], Val) :- succ(Z,Y),get_cell(1,Z, [T2|T], Val).
+get_cell(X, Y, [_|T], Val) :- succ(W,X),get_cell(W, Y, T, Val).
+
+/*
+    count_cells(+M,+Val,-Count)
+    Devuelve en Count la cantidad de celdas de M cuyo valor es Val
+*/
+
+count_cells([], _, 0).
+count_cells([[]|T], Val, Count) :- count_cells(T, Val, Count).
+count_cells([[Val|R]|T], Val, Count) :- count_cells([R|T], Val, C),succ(C,Count).
+count_cells([[H1|R]|T], Val, Count) :- H1\==Val,count_cells([R|T], Val, Count).
+
+/*
+    set_cell(+X,+Y,+M1,+Val,-M2)
+    Devuelve en M2 una matriz igual a M1, pero cambiando el contenido de la celda (X,Y) por el valor
+    Val.
+*/
+
+set_cell(_, _, []         ,   _, []           ) .
+set_cell(0, 0, [[H|T1]|T2],   _, [[H|T3]|T4]  ) :-                   set_cell(0, 0, [T1|T2],   _, [T3|T4]).
+set_cell(0, 0, [[]|T1]    , Val, [[]|T2]      ) :-                   set_cell(0, 0, T1     , Val, T2     ).
+set_cell(1, 1, [[_|T1]|T2], Val, [[Val|T3]|T4]) :-                   set_cell(0, 0, [T1|T2],   _, [T3|T4]).
+set_cell(1, Y, [[H|T1]|T2], Val, [[H|T3]|T4]  ) :- Y > 1, succ(W,Y), set_cell(1, W, [T1|T2], Val, [T3|T4]).
+set_cell(X, Y, [[]|T1]    , Val, [[]|T2]      ) :- X > 1, succ(Z,X), set_cell(Z, Y, T1     , Val, T2     ).
+set_cell(X, Y, [[H|T1]|T2], Val, [[H|T3]|T4]  ) :- X > 1,     Y > 1, set_cell(X, Y, [T1|T2], Val, [T3|T4]).
