@@ -1,4 +1,3 @@
-
 % Predicados simples sobre listas.
 
 /* 
@@ -143,3 +142,21 @@ selection_sort(X, [Y|Ys]) :-
     min(X, Y),
     remove_elem(X, Y, Zs),
     selection_sort(Zs, Ys).
+
+//=======================================matrix=======================================//
+matrix(0, _, _, []).
+matrix(_, 0, _, []).
+matrix(X, Y, Val, [H|T])  :- succ(W,Y),member_length(X, Val, H),matrix(X, W, Val, T).
+matrix(X, 1, Val, [H|[]]) :- member_length(X, Val, H).
+
+member_length(0, _, []).
+member_length(X, Aux, [Aux| T ]) :- succ(Z,X),member_length(Z, Aux, T).
+
+
+//===================================select_column====================================//
+select_column([],[],[]).
+select_column([[A|R]|T], [H|Tc], [Hr|Tr]) :- A==H, R==Hr, select_column(T, Tc, Tr).
+
+
+//===================================symmetric========================================//
+symmetric(M) :- transpose(M,M).
