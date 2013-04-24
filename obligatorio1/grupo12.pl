@@ -201,3 +201,18 @@ set_cell(1, 1, [[_|T1]|T2], Val, [[Val|T3]|T4]) :-                   set_cell(0,
 set_cell(1, Y, [[H|T1]|T2], Val, [[H|T3]|T4]  ) :- Y > 1, succ(W,Y), set_cell(1, W, [T1|T2], Val, [T3|T4]).
 set_cell(X, Y, [[]|T1]    , Val, [[]|T2]      ) :- X > 1, succ(Z,X), set_cell(Z, Y, T1     , Val, T2     ).
 set_cell(X, Y, [[H|T1]|T2], Val, [[H|T3]|T4]  ) :- X > 1,     Y > 1, set_cell(X, Y, [T1|T2], Val, [T3|T4]).
+
+/*
+    transpose(+M1,?M2)
+    M1 y M2 son matrices transpuestas
+*/
+
+sacar_pc([[_|T]|[]],[T|[]]).
+sacar_pc([[_|T1]|T2],[T1|T3]) :- T2\==[],sacar_pc(T2,T3).
+
+select_column([],[],[]).
+select_column([[A|R]|T], [H|Tc], [Hr|Tr]) :- A==H, R==Hr, select_column(T, Tc, Tr).
+
+transpose([],[]).
+transpose([[]|T],T2) :- transpose(T,T2).
+transpose(M,[H2|T2]) :- sacar_pc(M,Z),select_column(M,H2,Z),transpose(Z,T2).
