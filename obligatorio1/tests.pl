@@ -219,4 +219,114 @@ test(selection_sort5) :-
         findall(X, selection_sort([1], X), Xs),
         Xs = [[1]].
 
+% matrix
+
+test(matrix0) :-
+        matrix(1,1,1,[[1]]), !.
+
+test(matrix1) :-
+        matrix(5,2,2,[[2,2],[2,2],[2,2],[2,2],[2,2]]), !.
+
+test(matrix2) :-
+        findall(X, matrix(5,2,2,X), Xs),
+        Xs = [[[2,2],[2,2],[2,2],[2,2],[2,2]]].
+
+test(matrix3) :-
+        matrix(2,1,0,[[0],[0]]), !.
+
+test(matrix4) :-
+        findall(X, matrix(5,1,6,X), Xs),
+        Xs = [[[6],[6],[6],[6],[6]]].
+
+% member_length
+
+test(member_length0) :-
+        member_length(0,0,[]), !.
+
+test(member_length1) :-
+        member_length(10,0,[0,0,0,0,0,0,0,0,0,0]), !.
+
+test(member_length2) :-
+        findall(X, member_length(5,2,X), Xs),
+        Xs = [[2,2,2,2,2]].
+
+% select_column
+
+test(select_column0) :-
+        select_column([],[],[]).
+
+test(select_column1) :-
+        select_column([[1],[1],[1]],[1,1,1],[[],[],[]]).
+
+test(select_column2) :-
+        select_column([[1,1],[2,1],[3,1]],[1,2,3],[[1],[1],[1]]).
+
+test(select_column3) :-
+        select_column([[1,1,1],[2,2,2]],[1,2],[[1,1],[2,2]]).
+
+test(select_column4) :-
+        select_column([[1,1,1],[2,2,2]],[1,2],[[1,1],[2,2]]).
+
+test(select_column5) :-
+        findall(X, select_column([[1,1],[2,2],[3,3]],X,[[1],[2],[3]]), Xs),
+        Xs = [[1,2,3]].
+
+test(select_column6) :-
+        findall(X, select_column([[1,1],[2,2],[3,3]],[1,2,3],X), Xs),
+        Xs = [[[1],[2],[3]]].
+
+test(select_column7) :-
+        findall(X, select_column(X,[1,2,3],[[1],[2],[3]]), Xs),
+        Xs = [[[1,1],[2,2],[3,3]]].
+
+% symmetric
+
+/*test(symmetric0) :-
+        symmetric([[0,0],[0,0]]), !.
+
+test(symmetric1) :-
+        symmetric([[1,0,0],[0,1,0],[0,0,1]]), !.
+
+test(symmetric2) :-
+        symmetric([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]), !.*/
+
+% get_cell
+
+test(get_cell0) :-
+        get_cell(1,1,[[X]],X), !.
+
+test(get_cell1) :-
+        get_cell(3,3,[[1,1,1,1],[1,1,1,1],[1,1,X,1],[1,1,1,1]],X), !.
+
+test(get_cell2) :-
+        findall(X, get_cell(2,2,[[1,1,1,1],[1,3,1,1],[1,1,1,1],[1,1,1,1]],X), Xs),
+        Xs = [3].
+
+% count_cells
+
+test(count_cells0) :-
+        count_cells([], _, 0), !.
+
+test(count_cells1) :-
+        count_cells([[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]], 2, 0), !.
+
+test(count_cells2) :-
+        count_cells([[1,1,3,1],[1,1,1,1],[1,3,1,1],[1,1,1,1],[1,1,1,3]], 3, 3), !.
+
+test(count_cells3) :-
+        findall(X, count_cells([[1,1,3,1],[1,1,1,3]], 3, X), Xs),
+        Xs = [2].
+
+% set_cell
+
+test(set_cell0) :-
+        set_cell(1,1,[[1,1,1,1],[1,1,1,1]],9,[[9,1,1,1],[1,1,1,1]]), !.
+
+test(set_cell1) :-
+        set_cell(2,4,[[1,1,1,1],[1,1,1,1]],9,[[1,1,1,1],[1,1,1,9]]), !.
+
+test(set_cell2) :-
+        findall(X, set_cell(4,2,[[1,1],[1,1],[1,1],[1,1],[1,1]],9,X), Xs),
+        Xs = [[[1,1],[1,1],[1,1],[1,9],[1,1]]].
+
 :- end_tests(lists).
