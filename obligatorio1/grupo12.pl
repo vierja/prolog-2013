@@ -175,6 +175,25 @@ select_column([[A|R]|T], [H|Tc], [Hr|Tr]) :-
         select_column(T, Tc, Tr).
 
 /*
+    transpose(+M1,?M2)
+    M1 y M2 son matrices transpuestas
+*/
+
+sacar_pc([[_|T]|[]],[T|[]]).
+sacar_pc([[_|T1]|T2],[T1|T3]) :-
+        T2\==[],
+        sacar_pc(T2,T3).
+
+:- redefine_system_predicate(transpose/2).
+
+transpose([],[]).
+transpose([[]|T],T2) :- transpose(T,T2).
+transpose(M,[H2|T2]) :- 
+        sacar_pc(M,Z),
+        select_column(M,H2,Z),
+        transpose(Z,T2).
+
+/*
     symmetric(+M)
     M es una matriz simétrica.
 */

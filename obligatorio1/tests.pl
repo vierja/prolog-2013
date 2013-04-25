@@ -281,14 +281,14 @@ test(select_column7) :-
 
 % symmetric
 
-/*test(symmetric0) :-
+test(symmetric0) :-
         symmetric([[0,0],[0,0]]), !.
 
 test(symmetric1) :-
         symmetric([[1,0,0],[0,1,0],[0,0,1]]), !.
 
 test(symmetric2) :-
-        symmetric([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]), !.*/
+        symmetric([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]), !.
 
 % get_cell
 
