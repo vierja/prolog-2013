@@ -28,6 +28,12 @@ sublist_n([X|Xs], N, [X|Ys]) :-
         Z is N-1,
         prefix_n(Xs, Z, Ys).
 
+/*
+    Aux. prefix_n(L+, ?Pos, ?Prefix).
+    `Prefix` es una lista prefijo de la lista `L` hasta la posicion `Pos` (1-based).
+    Ej. prefix_n([1,2,3,4,5],2,[1,2]).
+*/
+
 prefix_n(_, 0, []).
 prefix_n([X|Xs], N, [X|Ys]) :-
         Z is N-1,
@@ -36,7 +42,7 @@ prefix_n([X|Xs], N, [X|Ys]) :-
 /*
     max(+L,?Max,?L1)
     `Max` es el maximo de `L`, `L1` es la lista `L` sin Max.
-    Ej. max([2,4,3], 4, [2,3])
+    Ej. max([2,4,3], 4, [2,3]).
 */
 
 max([X], X, []).
@@ -44,7 +50,12 @@ max(X, Max, L1) :-
         max_list(X, Max),
         remove_elem(X, Max, L1).
 
-% max_list(+L, Max)
+/*
+    max_list(+L, ?Max).
+    `Max` es el maximo de `L`.
+    Ej. max_list([2,4,3], 4).
+*/
+
 
 max_list([X|Xs], Max) :-
         max_list(Xs, X, Max).
@@ -98,7 +109,11 @@ member_sorted([X,Y|Zs], Sorted):-
         member_sorted(Last, LastSorted),
         merge(FirstSorted, LastSorted, Sorted).
 
-% split_list(+L, ?S1, ?S2)
+/*
+    split_list(+L, ?S1, ?S2).
+    `S1` y `S2` son dos listas creadas alternando los elemtos de `L`.
+    Ej. split_list([1,2,3,4],[1,3],[2,4]).
+*/
 
 split_list([], [], []).
 split_list([A], [], [A]).
@@ -112,23 +127,39 @@ split_list([X,Y|Zs], [X|Xs], [Y|Ys]) :-
     Se define como `permutacion` porque `permutation` ya existe.
 */
 
-% remove_elem(+L, +Elem, ?LsinElem)
+permutation([], []).
+permutation(X, [Y|Ys]) :-
+        remove_elem(X, Y, Zs),
+        permutation(Zs, Ys).
+
+/*
+    remove_elem(+L, +Elem, ?LsinElem)
+    `LsinElem` es una lista igual a `L` sin la primera ocurrencia del elemento `Elem`.
+    Ej. remove_elem([1,2,2],2,[1,2]).
+
+*/
 
 remove_elem([A|C], A, C).
 remove_elem([A|C], B, [A|D]) :-
         remove_elem(C, B, D).
-
-permutacion([], []).
-permutacion(X, [Y|Ys]) :-
-        remove_elem(X, Y, Zs),
-        permutacion(Zs, Ys).
 
 /*
     selection_sort(+L,?S)
     `S` es la lista ordenada de `L` utilizando el algoritmo de selection sort.
 */
 
-% min(+L, ?Min)
+selection_sort([], []).
+selection_sort(X, [Y|Ys]) :-
+    min(X, Y),
+    remove_elem(X, Y, Zs),
+    selection_sort(Zs, Ys).
+
+/*
+    min(+L, ?Min)
+    `Min` es el minimo elemento de la lista `L`.
+    Ej. min([7,4,1,4], 1).
+    Utiliza un wrapper (min) para para utilizar un acumulador.
+*/
 
 min([X|Xs], Min) :-
         min(Xs, X, Min).
@@ -136,12 +167,6 @@ min([X|Xs], Cand, Rest):-
         X >= Cand, min(Xs, Cand, Rest);
         X <  Cand, min(Xs, X, Rest).
 min([], Cand, Cand).
-
-selection_sort([], []).
-selection_sort(X, [Y|Ys]) :-
-    min(X, Y),
-    remove_elem(X, Y, Zs),
-    selection_sort(Zs, Ys).
 
 /*
     matrix(+X,+Y,+Val,?M)
@@ -175,8 +200,6 @@ select_column( [], [], []).
     transpose(+M1,?M2)
     M1 y M2 son matrices transpuestas
 */
-
-:- redefine_system_predicate(transpose/2).
 
 transpose([ H | T ], M2) :- select_column(M2, H, Mrest), transpose(T, Mrest).
 transpose([], [[]|T]) :- transpose([],T).
