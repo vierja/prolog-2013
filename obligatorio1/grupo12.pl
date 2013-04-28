@@ -71,7 +71,13 @@ max_list([], Cand, Cand).
 */
 
 palindromo(X) :-
-        reverse(X, X).
+        reverse_aux(X, X).
+
+reverse_aux(X, Y) :-
+        reverse_aux(X, [], Y).
+
+reverse_aux([X|Xs],Z,Rev) :- reverse_aux(Xs, [X|Z], Rev).
+reverse_aux([], Z, Z).
 
 % Predicados avanzados sobre listas.
 
@@ -95,19 +101,14 @@ merge([X|Xs], [Y|Ys], [Y|Zs]) :-
     member_sorted(+L,+X)
     `X` es un elemento de la lista ordenada `L`, no se debe recorrer la lista
     innecesariamente.
-
-    Se realiza merge_sort que funciona de forma recursiva y no recorre la lista
-    de forma innecesaria.
-    http://en.wikipedia.org/wiki/Merge_sort
 */
 
-member_sorted([], []).
-member_sorted([X], [X]).
-member_sorted([X,Y|Zs], Sorted):-
-        split_list([X,Y|Zs], First, Last),
-        member_sorted(First, FirstSorted),
-        member_sorted(Last, LastSorted),
-        merge(FirstSorted, LastSorted, Sorted).
+member_sorted([X], X).
+member_sorted([X|_], Elem) :- 
+        Elem is X.
+member_sorted([X|Xs], Elem) :- 
+        X =< Elem,
+        member_sorted(Xs, Elem).
 
 /*
     split_list(+L, ?S1, ?S2).

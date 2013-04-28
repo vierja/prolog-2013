@@ -138,17 +138,10 @@ test(merge9) :-
 % member_sorted
 
 test(member_sorted0) :-
-        member_sorted([],[]), !.
+        member_sorted([1],1), !.
 
 test(member_sorted1) :-
-        member_sorted([9,8,7,6,5,4,3,2,1],[1,2,3,4,5,6,7,8,9]), !.
-
-test(member_sorted2) :-
-        member_sorted([1],[1]), !.
-
-test(member_sorted3) :-
-        findall(X, member_sorted([6,42,3,5,1,99], X), Xs),
-        Xs = [[1,3,5,6,42,99]].
+        member_sorted([1,2,3,4,5,6,6],3), !.
 
 % permutation
 
