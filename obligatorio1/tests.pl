@@ -37,7 +37,7 @@ test(sublist_n_4) :-
 
 test(sublist_n_5) :-
         findall(X,  sublist_n([a,b,c], 2, X), Xs),
-        Xs = [[b,c], [a,b]], !.
+        Xs = [[a,b],[b,c]], !.
 
 % max_list
 
@@ -166,6 +166,8 @@ test(permutation6) :-
         findall(X, permutation([1,2,3], X), Xs),
         Xs = [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]].
 
+/*
+Se comenta test sobre predicados auxiliares.
 % remove_elem
 
 test(remove_elem0) :-
@@ -184,7 +186,10 @@ test(remove_elem3) :-
 test(remove_elem4) :-
         findall(X, remove_elem([1,2,3,4,5,6], X, [1,3,4,5,6]), Xs),
         Xs = [2].
+*/
 
+/*
+Se comenta test sobre predicados auxiliares.
 % min
 
 test(min0, [fail]) :-
@@ -199,6 +204,7 @@ test(min2) :-
 test(min3) :-
         findall(X, min([9876,222,3435,23523], X), Xs),
         Xs = [222].
+*/
 
 % selection_sort
 
@@ -241,6 +247,8 @@ test(matrix4) :-
         findall(X, matrix(5,1,6,X), Xs),
         Xs = [[[6],[6],[6],[6],[6]]].
 
+/*
+Se comenta test sobre predicados auxiliares.
 % member_length
 
 test(member_length0) :-
@@ -252,6 +260,7 @@ test(member_length1) :-
 test(member_length2) :-
         findall(X, member_length(5,2,X), Xs),
         Xs = [[2,2,2,2,2]].
+*/
 
 % select_column
 

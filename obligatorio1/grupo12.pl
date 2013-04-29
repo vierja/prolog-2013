@@ -1,4 +1,9 @@
-% Pablo Anzorena 4.649.265-3 Bruno Olivera 4.255.728-9 Javier Rey 4.549.396-3
+% Pablo Anzorena  - 4.649.265-3
+% Bruno Olivera   - 4.255.728-9
+% Javier Rey      - 4.549.396-3
+
+:- module(grupo12, [nth/3, sublist_n/3, max/3, palindromo/1, merge/3, member_sorted/2, permutation/2, selection_sort/2, matrix/4, select_column/3, transpose/2, symmetric/1, get_cell/4, set_cell/5, count_cells/3]).
+
 % Predicados simples sobre listas.
 
 /*
