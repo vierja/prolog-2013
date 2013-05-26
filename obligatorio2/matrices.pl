@@ -1,4 +1,4 @@
-:- module(matrices, [matrix/4, get_cell/4, set_cell/4, count_cells/3]).
+:- module(matrices, [matrix/4, get_cell/4, set_cell/4, count_cells/3, get_num_rows/2, get_num_cols/2]).
 
 % Crea una matriz X,Y con todos sus valores seteados a Val.
 matrix(X, Y, Val, M) :- 
@@ -13,7 +13,7 @@ get_num_rows(M, X) :-
 
 % Devuelve el numero de columnas.
 get_num_cols(M, X) :-
-        row(Y, Val, R),
+        arg(1, M, R),
         R =.. [row | C],
         length(C, X).
 

@@ -55,7 +55,6 @@ evento(reiniciar,Visual, Matriz, Turno) :-
 % movimiento
 movimiento(Visual, Fila, Columna, Matriz, Turno) :-
         get_cell(Fila, Columna, Matriz, Val), writeln("Valor en click: " + Val),
-        string_to_atom(Turno, TurnoStr),
         ( Turno == Val -> % Si el valor donde se hizo click, es la ficha del turno. 
             gr_ficha(Visual,Fila,Columna, negro_selected), % La pinto de otro color.
             gr_evento(Visual,click(FilaDest,ColumnaDest)), writeln("Posicion segundo click: " + (FilaDest, ColumnaDest)), % Espero otro click.
@@ -87,6 +86,14 @@ saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno) :-
 
 
 clonar(Visual, Fila, Columna, Matriz, Turno) :-
-        set_cell(Fila, Columna, Matriz, Turno),
-        sformat(Msg, "Jugador clona"),
-        gr_estado(Visual, Msg).
+        (
+            get_cell(Fila, Columna, Matriz, vacio), % Chequeo que la fila este vacia.
+            findall(X, get_adj_value(Fila, Columna, Matriz, X), Lista), % Obtengo la lista de las adjacentes.
+            member(Turno, Lista), % Chequeo que al menos una de las adjacentes tenga el valor.
+            set_cell(Fila, Columna, Matriz, Turno), % Seteo el valor.
+            sformat(Msg, "Jugador clona"),
+            gr_estado(Visual, Msg);
+
+            sformat(Msg, 'Clonacion invalida.'),
+            gr_estado(Visual, Msg)
+        ).
