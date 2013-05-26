@@ -18,31 +18,36 @@ infectlog :-
 		 7,7),
 	init_matriz(7,7, Matriz),
 	dibujar_matriz(Matriz, Visual),
-	
 	sformat(Msg, 'Inicio de juego'),
 	gr_estado(Visual, Msg),
-	loop(Visual, Matriz),
+	loop(Visual, Matriz, blanco),
 	gr_destruir(Visual).
 
 % loop(+Visual, +Matriz)
-loop(Visual, Matriz) :-
+loop(Visual, Matriz, Turno) :-
 	dibujar_matriz(Matriz, Visual),
 	gr_evento(Visual,E),
-	evento(E,Visual, Matriz).
+	evento(E,Visual, Matriz, Turno).
 
 % evento(+Event,+Visual)
-evento(click(Fila,Columna),Visual, Matriz) :-
-	gr_ficha(Visual,Fila,Columna,blanco),
-	set_cell(Fila,Columna,Matriz,blanco),
-	loop(Visual, Matriz).
-evento(salir,Visual, Matriz) :-
+evento(click(Fila,Columna),Visual, Matriz, Turno) :-
+	gr_ficha(Visual,Fila,Columna,Turno),
+	set_cell(Fila,Columna,Matriz,Turno),
+	( Turno == blanco,
+	  loop(Visual, Matriz, negro);
+	  loop(Visual, Matriz, blanco)
+	).
+evento(salir,Visual, Matriz, Turno) :-
 	(   gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí')
 	->  true
-	;   loop(Visual, Matriz)
+	;   loop(Visual, Matriz, Turno)
 	).
-evento(reiniciar,Visual, Matriz) :-
+evento(reiniciar,Visual, Matriz, _) :-
 	(   gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí')
 	->  % reiniciar el juego
 		true
-	;   loop(Visual, Matriz)
+	;   loop(Visual, Matriz, blanco)
 	).
+
+
+% movimiento
