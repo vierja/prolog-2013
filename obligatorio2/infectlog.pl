@@ -33,11 +33,9 @@ loop(Visual, Matriz, Turno) :-
 evento(click(Fila,Columna),Visual, Matriz, Turno) :-
     /*gr_ficha(Visual,Fila,Columna,Turno),
     set_cell(Fila,Columna,Matriz,Turno),*/
-    movimiento(Visual, Fila, Columna, Matriz, Turno),
-    ( Turno == blanco,
-      loop(Visual, Matriz, negro);
-      loop(Visual, Matriz, blanco)
-    ).
+    movimiento(Visual, Fila, Columna, Matriz, Turno, SigTurno),
+    loop(Visual, Matriz, SigTurno).
+
 evento(salir,Visual, Matriz, Turno) :-
     (   gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí')
     ->  true
@@ -51,49 +49,60 @@ evento(reiniciar,Visual, Matriz, Turno) :-
     ;   loop(Visual, Matriz, Turno)
     ).
 
+siguiente_turno(Actual, Siguiente) :-
+        ( Actual == blanco,
+          Siguiente = negro;
+          Siguiente = blanco
+        ).
 
 % movimiento
-movimiento(Visual, Fila, Columna, Matriz, Turno) :-
-        get_cell(Fila, Columna, Matriz, Val), writeln("Valor en click: " + Val),
+movimiento(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
+        get_cell(Fila, Columna, Matriz, Val), writeln('Valor en click: ' + Val),
         ( Turno == Val -> % Si el valor donde se hizo click, es la ficha del turno. 
             gr_ficha(Visual,Fila,Columna, negro_selected), % La pinto de otro color.
-            gr_evento(Visual,click(FilaDest,ColumnaDest)), writeln("Posicion segundo click: " + (FilaDest, ColumnaDest)), % Espero otro click.
-            saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno);
+            gr_evento(Visual, click(FilaDest,ColumnaDest)), writeln('Posicion segundo click: ' + (FilaDest, ColumnaDest)), % Espero otro click.
+            saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno);
             (   Val == vacio ->
-                    writeln("Se hace click en vacio."),
-                    clonar(Visual, Fila, Columna, Matriz, Turno);
+                    writeln('Se hace click en vacio.'),
+                    clonar(Visual, Fila, Columna, Matriz, Turno, SigTurno);
                 % Turno /== Val % Si se hizo click en una ficha de color incorrecto, error.
                     writeln('Se hace click en color del otro'),
                     sformat(Msg, 'Movimiento invalido.'),
-                    gr_estado(Visual, Msg)
-
+                    gr_estado(Visual, Msg),
+                    SigTurno = Turno
             )
         ).
 
-saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno) :-
-        writeln("Saltar"),
+saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
+        writeln('Saltar'),
         get_cell(FilaDest, ColumnaDest, Matriz, DestVal),
         (   DestVal == vacio ->
                 set_cell(Fila, Columna, Matriz, vacio),
                 set_cell(FilaDest, ColumnaDest, Matriz, Turno),
                 %string_to_atom(Turno,TurnoStr),
                 sformat(Msg, "Jugador mueve de un lugar a otro"),
-                gr_estado(Visual, Msg);
+                gr_estado(Visual, Msg),
+                siguiente_turno(Turno, SigTurno);
 
             sformat(Msg, 'Movimiento invalido.'),
-            gr_estado(Visual, Msg)
+            gr_estado(Visual, Msg),
+            SigTurno = Turno
         ).
 
 
-clonar(Visual, Fila, Columna, Matriz, Turno) :-
+clonar(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
         (
+            writeln('Clonar'),
             get_cell(Fila, Columna, Matriz, vacio), % Chequeo que la fila este vacia.
             findall(X, get_adj_value(Fila, Columna, Matriz, X), Lista), % Obtengo la lista de las adjacentes.
             member(Turno, Lista), % Chequeo que al menos una de las adjacentes tenga el valor.
             set_cell(Fila, Columna, Matriz, Turno), % Seteo el valor.
             sformat(Msg, "Jugador clona"),
-            gr_estado(Visual, Msg);
+            gr_estado(Visual, Msg),
+            siguiente_turno(Turno, SigTurno);
 
+            writeln('Clonacion invalida.'),
             sformat(Msg, 'Clonacion invalida.'),
-            gr_estado(Visual, Msg)
+            gr_estado(Visual, Msg),
+            SigTurno = Turno
         ).
