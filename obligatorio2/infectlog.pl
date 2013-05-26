@@ -1,4 +1,7 @@
 :- use_module(graficos).
+:- use_module(matrices).
+:- use_module(infect_matriz).
+:- use_module(infect_matgraf).
 
 % Este archivo se provee como una guía para facilitar la implementación y 
 % entender el uso de graficos.pl
@@ -13,28 +16,33 @@ infectlog :-
 		     boton('Reiniciar',reiniciar),
 		     boton('Salir',salir)], % salir puede ser por el boton o por el click en la ventana
 		 7,7),
-	loop(Visual),
+	init_matriz(7,7, Matriz),
+	dibujar_matriz(Matriz, Visual),
+	
+	sformat(Msg, 'Inicio de juego'),
+	gr_estado(Visual, Msg),
+	loop(Visual, Matriz),
 	gr_destruir(Visual).
 
-% loop(+Visual)
-loop(Visual) :-
-	sformat(Msg, 'Mensaje de estado'),
-	gr_estado(Visual, Msg),
+% loop(+Visual, +Matriz)
+loop(Visual, Matriz) :-
+	dibujar_matriz(Matriz, Visual),
 	gr_evento(Visual,E),
-	evento(E,Visual).
+	evento(E,Visual, Matriz).
 
 % evento(+Event,+Visual)
-evento(click(Fila,Columna),Visual) :-
+evento(click(Fila,Columna),Visual, Matriz) :-
 	gr_ficha(Visual,Fila,Columna,blanco),
-	loop(Visual).
-evento(salir,Visual) :-
+	set_cell(Fila,Columna,Matriz,blanco),
+	loop(Visual, Matriz).
+evento(salir,Visual, Matriz) :-
 	(   gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí')
 	->  true
-	;   loop(Visual)
+	;   loop(Visual, Matriz)
 	).
-evento(reiniciar,Visual) :-
+evento(reiniciar,Visual, Matriz) :-
 	(   gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí')
 	->  % reiniciar el juego
 		true
-	;   loop(Visual)
+	;   loop(Visual, Matriz)
 	).
