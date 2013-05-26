@@ -82,6 +82,7 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
                 Distance =< 2,
                 set_cell(Fila, Columna, Matriz, vacio),
                 set_cell(FilaDest, ColumnaDest, Matriz, Turno),
+                infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
                 sformat(Msg, 'Jugador mueve de un lugar a otro'),
                 gr_estado(Visual, Msg),
                 siguiente_turno(Turno, SigTurno);
@@ -100,6 +101,7 @@ clone(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
             findall(X, get_adj_value(Fila, Columna, Matriz, X), Lista), % Obtengo la lista de las adjacentes. TODO:Obtiene tambien el valor X,Y aunque no cambia el comportamiento.
             member(Turno, Lista), % Chequeo que al menos una de las adjacentes tenga el valor.
             set_cell(Fila, Columna, Matriz, Turno), % Seteo el valor.
+            infect_adj(Fila, Columna, Matriz, Turno),
             sformat(Msg, 'Jugador clona'),
             gr_estado(Visual, Msg),
             siguiente_turno(Turno, SigTurno);
