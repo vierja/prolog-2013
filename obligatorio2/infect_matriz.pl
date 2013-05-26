@@ -1,4 +1,4 @@
-:- module(infect_matriz, [init_matriz/3, get_adj_value/4]).
+:- module(infect_matriz, [init_matriz/3, get_adj_value/4, distance/5]).
 
 :- use_module(matrices).
 
@@ -32,4 +32,9 @@ get_adj_value(X, Y, M, L) :-
         get_cell(Xval, Yval, M, L).
 
         %TODO: FALTA EL CHEQUEO PARA QUE NO DEVUELVA EL VALOR DE X,Y
+
+distance(X1, Y1, X2, Y2, Distance) :-
+        Xdif = abs(X1 - X2),
+        Ydif = abs(Y1 - Y2),
+        max_list([Xdif, Ydif], Distance).
 

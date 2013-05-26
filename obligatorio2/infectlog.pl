@@ -55,17 +55,17 @@ siguiente_turno(Actual, Siguiente) :-
           Siguiente = blanco
         ).
 
-% movimiento
+% Movimiento. Al recibir un click. Esta funcion se encarga de realizar el salto, o de clonar.
 movimiento(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
         get_cell(Fila, Columna, Matriz, Val), writeln('Valor en click: ' + Val),
         ( Turno == Val -> % Si el valor donde se hizo click, es la ficha del turno. 
             gr_ficha(Visual,Fila,Columna, negro_selected), % La pinto de otro color.
             gr_evento(Visual, click(FilaDest,ColumnaDest)), writeln('Posicion segundo click: ' + (FilaDest, ColumnaDest)), % Espero otro click.
-            saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno);
+            jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno);
             (   Val == vacio ->
                     writeln('Se hace click en vacio.'),
-                    clonar(Visual, Fila, Columna, Matriz, Turno, SigTurno);
-                % Turno /== Val % Si se hizo click en una ficha de color incorrecto, error.
+                    clone(Visual, Fila, Columna, Matriz, Turno, SigTurno);
+                % Turno /== Val Si se hizo click en una ficha de color incorrecto, error.
                     writeln('Se hace click en color del otro'),
                     sformat(Msg, 'Movimiento invalido.'),
                     gr_estado(Visual, Msg),
@@ -73,14 +73,16 @@ movimiento(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
             )
         ).
 
-saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
-        writeln('Saltar'),
+jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
+        writeln('jump'),
         get_cell(FilaDest, ColumnaDest, Matriz, DestVal),
-        (   DestVal == vacio ->
+        (       DestVal == vacio,
+                distance(Fila, Columna, FilaDest, ColumnaDest, Distance),
+                writeln('El segundo click se encuentra a una distancia de ' + Distance),
+                Distance =< 2,
                 set_cell(Fila, Columna, Matriz, vacio),
                 set_cell(FilaDest, ColumnaDest, Matriz, Turno),
-                %string_to_atom(Turno,TurnoStr),
-                sformat(Msg, "Jugador mueve de un lugar a otro"),
+                sformat(Msg, 'Jugador mueve de un lugar a otro'),
                 gr_estado(Visual, Msg),
                 siguiente_turno(Turno, SigTurno);
 
@@ -90,14 +92,15 @@ saltar(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
         ).
 
 
-clonar(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
+% Si es un movimiento valido, realiza una clonacion del color Turno, en la Fila y Columna especificada.
+clone(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
         (
             writeln('Clonar'),
             get_cell(Fila, Columna, Matriz, vacio), % Chequeo que la fila este vacia.
-            findall(X, get_adj_value(Fila, Columna, Matriz, X), Lista), % Obtengo la lista de las adjacentes.
+            findall(X, get_adj_value(Fila, Columna, Matriz, X), Lista), % Obtengo la lista de las adjacentes. TODO:Obtiene tambien el valor X,Y aunque no cambia el comportamiento.
             member(Turno, Lista), % Chequeo que al menos una de las adjacentes tenga el valor.
             set_cell(Fila, Columna, Matriz, Turno), % Seteo el valor.
-            sformat(Msg, "Jugador clona"),
+            sformat(Msg, 'Jugador clona'),
             gr_estado(Visual, Msg),
             siguiente_turno(Turno, SigTurno);
 
