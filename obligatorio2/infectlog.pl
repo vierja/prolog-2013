@@ -51,7 +51,8 @@ evento(reiniciar,Visual, Matriz, Turno) :-
 
 siguiente_turno(Actual, Siguiente) :-
         ( Actual == blanco,
-          Siguiente = negro;
+          Siguiente = negro
+          ;
           Siguiente = blanco
         ).
 
@@ -61,10 +62,13 @@ movimiento(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
         ( Turno == Val -> % Si el valor donde se hizo click, es la ficha del turno. 
             gr_ficha(Visual,Fila,Columna, negro_selected), % La pinto de otro color.
             gr_evento(Visual, click(FilaDest,ColumnaDest)), writeln('Posicion segundo click: ' + (FilaDest, ColumnaDest)), % Espero otro click.
-            jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno);
+            jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno)
+            ;
+        % Turno /== Val
             (   Val == vacio ->
                     writeln('Se hace click en vacio.'),
-                    clone(Visual, Fila, Columna, Matriz, Turno, SigTurno);
+                    clone(Visual, Fila, Columna, Matriz, Turno, SigTurno)
+                    ;
                 % Turno /== Val Si se hizo click en una ficha de color incorrecto, error.
                     writeln('Se hace click en color del otro'),
                     sformat(Msg, 'Movimiento invalido.'),
@@ -85,7 +89,8 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Matriz, Turno, SigTurno) :-
                 infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
                 sformat(Msg, 'Jugador mueve de un lugar a otro'),
                 gr_estado(Visual, Msg),
-                siguiente_turno(Turno, SigTurno);
+                siguiente_turno(Turno, SigTurno)
+                ;
 
             sformat(Msg, 'Movimiento invalido.'),
             gr_estado(Visual, Msg),
@@ -104,7 +109,8 @@ clone(Visual, Fila, Columna, Matriz, Turno, SigTurno) :-
             infect_adj(Fila, Columna, Matriz, Turno),
             sformat(Msg, 'Jugador clona'),
             gr_estado(Visual, Msg),
-            siguiente_turno(Turno, SigTurno);
+            siguiente_turno(Turno, SigTurno)
+            ;
 
             writeln('Clonacion invalida.'),
             sformat(Msg, 'Clonacion invalida.'),
