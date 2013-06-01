@@ -2,10 +2,14 @@
 
 :- use_module(graficos).
 :- use_module(infect_matriz).
+:- use_module(estadoJuego).
 
-dibujar_matriz(Matriz, Visual) :-
-	(   between(1, 7, FF),
-	    between(1, 7, CC),
+dibujar_matriz(Estado, Visual) :-
+	(   
+		obtener_matriz_estado(Estado,Matriz),
+		obtener_dimension_matriz(Estado,Dim),
+		between(1, Dim, FF),
+	    between(1, Dim, CC),
 		get_cell(FF, CC, Matriz, Val),
 	    gr_ficha(Visual, FF, CC, Val),
 	    fail
