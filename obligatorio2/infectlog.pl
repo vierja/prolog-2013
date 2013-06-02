@@ -153,10 +153,9 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
 		set_turno(Estado,SigTurno),
 		actualizar_estado(Estado),
 		(
-			get_turno(Estado,NuevoTurno),
 			termino_juego(Estado) -> true;
-			tiene_movimiento(Estado,NuevoTurno) -> true;
-			siguiente_turno(NuevoTurno, SigTurno2),
+			tiene_movimiento(Estado,SigTurno) -> true;
+			siguiente_turno(SigTurno, SigTurno2),
 			set_turno(Estado,SigTurno2),
 			actualizar_estado(Estado)
 		)
@@ -177,10 +176,9 @@ clone(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
 		set_turno(Estado,SigTurno),
 		actualizar_estado(Estado),
 		(
-			get_turno(Estado,NuevoTurno),
 			termino_juego(Estado) -> true;
-			tiene_movimiento(Estado,NuevoTurno) -> true;
-			siguiente_turno(NuevoTurno, SigTurno2),
+			tiene_movimiento(Estado,SigTurno) -> true;
+			siguiente_turno(SigTurno, SigTurno2),
 			set_turno(Estado,SigTurno2),
 			actualizar_estado(Estado)
 		)
@@ -198,7 +196,8 @@ obtener_ficha_turno(Matriz,Dim,Turno,Ficha) :-
 	(
 		between(1,Dim,FF),
 		between(1,Dim,CC),
-		get_cell(FF,CC,Matriz,Turno),
+		get_cell(FF,CC,Matriz,Val),
+		Val == Turno,
 		Ficha = (FF,CC)
 	).
 
