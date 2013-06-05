@@ -1,4 +1,4 @@
-:- module(estadoJuego, [estado/6, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2]).
+:- module(estadoJuego, [estado/6, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2, get_count_cells/3, get_count_oponent_cells/3]).
 :- use_module(matrices).
 :- use_module(infect_matriz).
 
@@ -65,3 +65,15 @@ obtener_ganador(E,Ganador) :-
 		Ganador = blanco;
 		Ganador = empate
 	).
+
+get_count_cells(Estado, negro, Cantidad) :-
+	arg(4, Estado, Cantidad).
+
+get_count_cells(Estado, blanco, Cantidad) :-
+	arg(5, Estado, Cantidad).
+
+get_count_oponent_cells(Estado, negro, Cantidad) :-
+	arg(5, Estado, Cantidad).
+
+get_count_oponent_cells(Estado, blanco, Cantidad) :-
+	arg(4, Estado, Cantidad).

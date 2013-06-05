@@ -1,5 +1,7 @@
 :- module(minimax, [minimax/4]). 
 
+:- use_module(estadoJuego).
+
 /*
     Realiza el algoritmo recursivo de minimax
 */
@@ -26,7 +28,7 @@ minimax(Estado, Maquina, MejorEstado, Val) :-
 %   MejorEstado: El mejor estado en las condiciones de Minimax (depende del color).
 %   Val: El valor numero del mejor estado.
 mejor_estado([MejorEstado], Maquina, MejorEstado, Val) :-
-    % No importa el siguiente estado del siguiente estado (etc..). Solo importa el valor.
+    % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
     minimax(MejorEstado, Maquina, _, Val), !. 
 
 mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal) :-
@@ -44,10 +46,10 @@ mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal) :-
 %   Estado2, Val2: Estado de juego posible 2 y su valor correspondiente.
 %   MejorEstado, MejorVal: Mejor estado y mejor valor en las condiciones de Minimax (Depende del turno de los estados y el color de la maquina).
 minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
-    % pseudocodigo
-    igual_turno(Estado1, Estado2) % Control de que estamos en el mismo turno.
+    Estado1 == Estado2, % Control de que estamos en el mismo turno.
     (
-        se_quiere_minimizar(Maquina, turno(Estado1)),
+        get_turno(Estado1, TurnoActual),
+        se_quiere_minimizar(Maquina, TurnoActual),
         minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         ;
         maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
@@ -58,27 +60,45 @@ minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
 */
 
 % evalEstado(+Estado, +Maquina, -Val).
-% Estado: Estado del juego
-% Maquina: Color del turno para el cual se quiere evaluar.
-% Val: Valor del estado Estado para el jugador Maquina. 
+%   Estado: Estado del juego
+%   Maquina: Color del turno para el cual se quiere evaluar.
+%   Val: Valor del estado Estado para el jugador Maquina. 
 evalEstado(Estado, Maquina, Val):-
-    % pseudocodigo (posible calculo)
-    count(Estado, Maquina, AFavor),
-    count_other(Estado, Maquina, EnContra),
+    % Posible calculo. Seguro se puede optimizar.
+    get_count_cells(Estado, Maquina, AFavor),
+    get_count_oponent_cells(Estado, Maquina, EnContra),
     Val is AFavor - EnContra.
+
+/*
+    Compara y devuelve el minimo de dos Estados,Valores.
+*/
 
 % Estado1, Val1 son minimo si:
 minimo_val(Estado1, Val1, _, Val2, Estado1, Val1) :-
     Val1 < Val2.
-
 % else
 minimo_val(_, _, Estado2, Val2, Estado2, Val2).
+
+/*
+    Compara y devuelve el maximo de dos Estados,Valores.
+*/
 
 % Estado1, Val1 son maximo si:
 maximo_val(Estado1, Val1, _, Val2, Estado1, Val1) :-
     Val1 => Val2.
-
 % else
 maximo_val(_, _, Estado1, Val2, Estado2, Val2).
+
+/*
+    Se quiere minimizar la maximizacion del oponente, no?
+    Minimizo si el turno es de la maquina.
+    Maximizo si el turno NO es de la maquina.
+*/
+
+% se_quiere_minimizar(?Maquina, ?TurnoActual)
+%   Maquina: Color de la maquina
+%   TurnoActual: Turno del actual.
+se_quiere_minimizar(Maquina, TurnoActual) :-
+    Maquina == TurnoActual.
 
 
