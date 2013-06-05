@@ -2,9 +2,22 @@
 
 :- use_module(estadoJuego).
 
+minimax_depth(4).
+
 /*
     Realiza el algoritmo recursivo de minimax
 */
+
+/*
+    Esto nose si puede funcionar asi.
+    Es como la manera de decir. Primero proba si recursion level
+    devuelve true usando el predicado minimax_depth.
+    Si devuelve true entonces el mejor estado es el estado actual
+    y calculamos el valor de este.
+*/
+minimax(Estado, Maquina, NivelRecusion, Estado, Val) :-
+    minimax_depth(NivelRecusion),
+    evalEstado(MejorEstado, Maquina, Val).
 
 % minimax(-Estado, -Maquina, -NivelRecursion, +MejorEstado, +Val).
 %   Estado: Estado del juego (Matriz, Turno, ...).
@@ -12,9 +25,10 @@
 %   NivelRecursion: Nivel de recursion actual del algoritmo.
 %   MejorEstado: Mejor estado calculado por el algoritmo.
 %   Valor: Valor numerico del Estado devuelto.
-minimax(Estado, Maquina, MejorEstado, Val) :-
+%   RecursionLevel: Nivel de recusion.
+minimax(Estado, Maquina, NivelRecusion, MejorEstado, Val) :-
     bagof(EstadoSiguiente, jugada_posible(Estado, EstadoSiguiente), ListaEstadoSiguiente),
-    mejor_estado(ListaEstadoSiguiente, Maquina, MejorEstado, Val), !
+    mejor_estado(ListaEstadoSiguiente, Maquina, MejorEstado, Val, NivelRecusion), !
     ;
     evalEstado(MejorEstado, Maquina, Val).     % Pos has no successors -> evaluate the positition
 
@@ -27,12 +41,14 @@ minimax(Estado, Maquina, MejorEstado, Val) :-
 %   Maquina: Color de la maquina.
 %   MejorEstado: El mejor estado en las condiciones de Minimax (depende del color).
 %   Val: El valor numero del mejor estado.
-mejor_estado([MejorEstado], Maquina, MejorEstado, Val) :-
+mejor_estado([MejorEstado], Maquina, MejorEstado, Val, NivelRecusion) :-
     % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
-    minimax(MejorEstado, Maquina, _, Val), !. 
+    SigNivelRecursion is NivelRecusion + 1,
+    minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val), !. 
 
 mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal) :-
-    minimax(Estado1, _, Val1),
+    SigNivelRecursion is NivelRecusion + 1,
+    minimax(Estado1, Maquina, SigNivelRecursion, _, Val1),
     mejor_estado(ListaEstado, Maquina, Estado2, Val2),
     minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal).
 
