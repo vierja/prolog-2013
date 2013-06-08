@@ -5,13 +5,13 @@
 :- use_module(estadoJuego).
 
 dibujar_matriz(Estado, Visual) :-
-	(   
-		obtener_matriz_estado(Estado,Matriz),
-		obtener_dimension_matriz(Estado,Dim),
-		between(1, Dim, FF),
-	    between(1, Dim, CC),
-		get_cell(FF, CC, Matriz, Val),
-	    gr_ficha(Visual, FF, CC, Val),
-	    fail
-	;   true
-	).
+    (   
+        obtener_matriz_estado(Estado,Matriz),
+        obtener_dimension_matriz(Estado,Dim),
+        between(1, Dim, FF),
+        between(1, Dim, CC),
+        get_cell(FF, CC, Matriz, Val),
+        gr_ficha(Visual, FF, CC, Val),
+        fail
+    ;   true
+    ).

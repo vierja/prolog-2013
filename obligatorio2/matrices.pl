@@ -69,27 +69,27 @@ count_val_list(X, [H|T], N) :-
 
 %Devuelve en L la lista de los elementos con valor Val (usar con findall)
 get_celdas_valor(M, Val, L) :-
-		get_num_rows(M,Dim),
-		between(1,Dim,FF),
-		between(1,Dim,CC),
-		get_cell(FF, CC, M, NewValue),
-		Val = NewValue,
-		L =.. [pareja|[(FF,CC)]].
+                get_num_rows(M,Dim),
+                between(1,Dim,FF),
+                between(1,Dim,CC),
+                get_cell(FF, CC, M, NewValue),
+                Val = NewValue,
+                L =.. [pareja|[(FF,CC)]].
 
 vaciar_lista(_,[]).
 vaciar_lista(M,[pareja((X,Y))|T]) :-
-	set_cell(X,Y,M,vacio),
-	vaciar_lista(M,T).
-	
+        set_cell(X,Y,M,vacio),
+        vaciar_lista(M,T).
+        
 resetear_matriz(M) :-
-	findall(X,get_celdas_valor(M,negro,X),Negras),
-	findall(Y,get_celdas_valor(M,blanco,Y),Blancas),
-	vaciar_lista(M,Negras),
-	vaciar_lista(M,Blancas),
-	get_num_rows(M,Dim),
-	set_cell(1,1,M,blanco),
-	set_cell(Dim,Dim,M,blanco),
-	set_cell(1,Dim,M,negro),
-	set_cell(Dim,1,M,negro).
-	
-	
+        findall(X,get_celdas_valor(M,negro,X),Negras),
+        findall(Y,get_celdas_valor(M,blanco,Y),Blancas),
+        vaciar_lista(M,Negras),
+        vaciar_lista(M,Blancas),
+        get_num_rows(M,Dim),
+        set_cell(1,1,M,blanco),
+        set_cell(Dim,Dim,M,blanco),
+        set_cell(1,Dim,M,negro),
+        set_cell(Dim,1,M,negro).
+        
+        
