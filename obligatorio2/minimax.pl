@@ -96,13 +96,15 @@ mismo_turno(Estado1, Estado2) :-
 %   Estado2, Val2: Estado de juego posible 2 y su valor correspondiente.
 %   MejorEstado, MejorVal: Mejor estado y mejor valor en las condiciones de Minimax (Depende del turno de los estados y el color de la maquina).
 minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
-    /*writeln('minimax_eval - comparo estado1 (valor=' + Val1 + ') con estado1 (valor=' + Val2 + ')'),*/
     mismo_turno(Estado1 ,Estado2), % Control de que estamos en el mismo turno.
     (
         get_turno(Estado1, TurnoActual),
         se_quiere_minimizar(Maquina, TurnoActual),
+        writeln('Se quiere minimizar.' + TurnoActual),
         minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         ;
+        get_turno(Estado1, TurnoActual),
+        writeln('Se quiere maximizar.' + TurnoActual),
         maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
     );
     writeln('&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\nFUCKING ERROR').
@@ -126,20 +128,21 @@ evalEstado(Estado, Maquina, Val):-
 */
 
 % Estado1, Val1 son minimo si:
-minimo_val(Estado1, Val1, _, Val2, Estado1, Val1) :-
-    Val1 < Val2.
+minimo_val(_, Val1, Estado2, Val2, Estado3, Val3) :-
+    Val2 < Val1, !,
+    Val2 = Val3, Estado2 = Estado3.
 % else
-minimo_val(_, _, Estado2, Val2, Estado2, Val2).
+minimo_val(Estado1, Val1, _, _, Estado1, Val1).
 
 /*
     Compara y devuelve el maximo de dos Estados,Valores.
 */
 
 % Estado1, Val1 son maximo si:
-maximo_val(Estado1, Val1, _, Val2, Estado1, Val1) :-
-    Val1 >= Val2.
+maximo_val(_, Val1, Estado2, Val2, Estado3, Val3) :-
+    Val1 =< Val2, !, Val2 = Val3, Estado2 = Estado3.
 % else
-maximo_val(_, _, Estado1, Val2, Estado1, Val2).
+maximo_val(Estado1, Val1, _, _, Estado1, Val1).
 
 /*
     Se quiere minimizar la maximizacion del oponente, no?
