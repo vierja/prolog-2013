@@ -92,7 +92,7 @@ siguiente_turno(Actual, Siguiente) :-
 %   Estado: Estado para el cual se quiere actualizar la matriz.
 %   Matriz: Nueva matriz. 
 actualizar_matriz(Estado, Matriz) :-
-    setarg(0, Estado, Matriz),
+    setarg(1, Estado, Matriz),
     count_cells(Matriz, negro, Negras),
     count_cells(Matriz, blanco, Blancas),
     setarg(4, Estado, Negras),
