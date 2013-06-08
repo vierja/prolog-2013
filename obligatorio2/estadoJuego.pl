@@ -1,4 +1,4 @@
-:- module(estadoJuego, [estado/6, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2, get_count_cells/3, get_count_oponent_cells/3]).
+:- module(estadoJuego, [estado/6, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2, get_count_cells/3, get_count_oponent_cells/3, siguiente_turno/2, actualizar_matriz/2]).
 :- use_module(matrices).
 :- use_module(infect_matriz).
 
@@ -77,3 +77,28 @@ get_count_oponent_cells(Estado, negro, Cantidad) :-
 
 get_count_oponent_cells(Estado, blanco, Cantidad) :-
     arg(4, Estado, Cantidad).
+
+% siguiente_turno(+Actual, ?Siguiente).
+%   Actual: Turno actual
+%   Siguiente: El otro turno.
+siguiente_turno(Actual, Siguiente) :-
+    ( 
+        Actual == blanco,
+        Siguiente = negro;
+        Siguiente = blanco
+    ).
+
+% actualizar_matriz(+Estado, +Matriz)
+%   Estado: Estado para el cual se quiere actualizar la matriz.
+%   Matriz: Nueva matriz. 
+actualizar_matriz(Estado, Matriz) :-
+    setarg(0, Estado, Matriz),
+    count_cells(Matriz, negro, Negras),
+    count_cells(Matriz, blanco, Blancas),
+    setarg(4, Estado, Negras),
+    setarg(5, Estado, Blancas),
+    (
+        termino_juego(Estado) -> set_turno(Estado, terminado);
+        true
+    ).
+

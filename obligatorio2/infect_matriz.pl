@@ -1,4 +1,4 @@
-:- module(infect_matriz, [init_matriz/3, get_adj_value/4, distance/5, infect_adj/4, get_adj_value_dist/6, get_adj_vacios_dist/6, get_adj_pos_oposite_value/5]).
+:- module(infect_matriz, [init_matriz/3, get_adj_value/4, distance/5, infect_adj/4, get_adj_value_dist/6, get_adj_vacios_dist/6, get_adj_pos_oposite_value/5, get_val_matriz/5]).
 
 :- use_module(matrices).
 :- use_module(graficos).
@@ -130,3 +130,13 @@ get_adj_vacios_dist(X,Y,Matriz,Dim,Dist,L) :-
     distance(X,Y,Xval,Yval,Dist),
     get_cell(Xval,Yval,Matriz,vacio),
     L = (Xval,Yval).
+
+get_val_matriz(Matriz, Turno, Dimension, X, Y) :-
+    writeln('Se busca color:' + Turno),
+    writeln('get_val_matriz -  Max:' + Dimension),
+    between(1, Dimension, X),
+    between(1, Dimension, Y),
+    get_cell(X, Y, Matriz, IsTurno),
+    writeln('get_val_matriz - X, Y' + X + ', ' + Y),
+    writeln('Posicion - X, Y' + X + ', ' + Y + ' tiene valor ' + IsTurno),
+    Turno == IsTurno.

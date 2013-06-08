@@ -3,6 +3,7 @@
 :- use_module(infect_matriz).
 :- use_module(infect_matgraf).
 :- use_module(estadoJuego).
+:- use_module(minimax).
 
 /*
     Este archivo se provee como una guía para facilitar la implementación y 
@@ -34,26 +35,35 @@ infectlog(Dim) :-
     loop(Visual, Estado),
     gr_destruir(Visual).
 
+turno_maquina(Estado) :-
+    get_turno(Estado, negro).
+
 % loop(+Visual, +Estado)
 loop(Visual, Estado) :-
     termino_juego(Estado) ->
-    obtener_ganador(Estado,Ganador),
-    dibujar_matriz(Estado, Visual),
-    atom_concat('Juego terminado, Ganador: ',Ganador,Msg),
-    gr_estado(Visual, Msg),
-    gr_evento(Visual,E),
-    evento(E,Visual, Estado);
-    
+        obtener_ganador(Estado,Ganador),
         dibujar_matriz(Estado, Visual),
+        atom_concat('Juego terminado, Ganador: ',Ganador,Msg),
+        gr_estado(Visual, Msg),
         gr_evento(Visual,E),
-        evento(E,Visual, Estado).
+        evento(E,Visual, Estado)
+        ;
+    dibujar_matriz(Estado, Visual),
+    turno_maquina(Estado) ->
+        minimax(Estado, negro, 0, SigEstado, Valor),
+        % No se como reemplazar al estado.
+        writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
+        loop(Visual, SigEstado)
+    ;
+    gr_evento(Visual,E),
+    evento(E,Visual, Estado).
 
 % evento(+Event,+Visual,+Estado)
 evento(click(Fila,Columna),Visual, Estado) :-
-    termino_juego(Estado) -> loop(Visual, Estado);
-    
-        movimiento(Visual, Fila, Columna, Estado),
-        loop(Visual, Estado).
+    termino_juego(Estado) -> loop(Visual, Estado)
+    ;    
+    movimiento(Visual, Fila, Columna, Estado),
+    loop(Visual, Estado).
 
 evento(salir,Visual, Estado) :-
     (   
@@ -72,16 +82,11 @@ evento(reiniciar,Visual, Estado) :-
         dibujar_matriz(Estado, Visual),
         set_turno(Estado, blanco),
         actualizar_estado(Estado),
-        loop(Visual, Estado);
+        loop(Visual, Estado)
+        ;
         loop(Visual, Estado)
     ).
 
-siguiente_turno(Actual, Siguiente) :-
-    ( 
-        Actual == blanco,
-        Siguiente = negro;
-        Siguiente = blanco
-    ).
 
 gr_ficha_lista(_,[],_).
 gr_ficha_lista(Visual,[(X,Y)|T],Imagen) :-
@@ -113,7 +118,8 @@ movimiento(Visual, Fila, Columna, Estado) :-
                 (                   
                     sformat(Msg, 'Movimiento invalido.'),
                     gr_estado(Visual, Msg)
-                );
+                )
+                ;
                 (
                     Distancia == 1,
                     clone(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado);
@@ -127,9 +133,11 @@ movimiento(Visual, Fila, Columna, Estado) :-
                     )
                 )               
             )
-        );
+        )
+        ;
         (   
-            Val == vacio -> writeln('Se hace click en vacio.');
+            Val == vacio -> writeln('Se hace click en vacio.')
+            ;
             (
                 sformat(Msg, 'Movimiento invalido.'),
                 gr_estado(Visual, Msg)
@@ -153,8 +161,10 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
         set_turno(Estado,SigTurno),
         actualizar_estado(Estado),
         (
-            termino_juego(Estado) -> true;
-            tiene_movimiento(Estado,SigTurno) -> true;
+            termino_juego(Estado) -> true
+            ;
+            tiene_movimiento(Estado,SigTurno) -> true
+            ;
             siguiente_turno(SigTurno, SigTurno2),
             set_turno(Estado,SigTurno2),
             actualizar_estado(Estado)

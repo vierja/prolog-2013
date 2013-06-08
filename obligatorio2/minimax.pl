@@ -1,8 +1,10 @@
-:- module(minimax, [minimax/4]). 
+:- module(minimax, [minimax/5]).
+:- use_module(matrices).
+:- use_module(infect_matriz).
 
 :- use_module(estadoJuego).
 
-minimax_depth(4).
+minimax_depth(1).
 
 /*
     Realiza el algoritmo recursivo de minimax
@@ -15,9 +17,9 @@ minimax_depth(4).
     Si devuelve true entonces el mejor estado es el estado actual
     y calculamos el valor de este.
 */
-minimax(Estado, Maquina, NivelRecusion, Estado, Val) :-
-    minimax_depth(NivelRecusion),
-    evalEstado(MejorEstado, Maquina, Val).
+/*minimax(Estado, Maquina, NivelRecursion, Estado, Val) :-
+    minimax_depth(NivelRecursion),
+    evalEstado(Estado, Maquina, Val), writeln('minimax - fin de recusion. valor:' + Val), !.*/
 
 % minimax(-Estado, -Maquina, -NivelRecursion, +MejorEstado, +Val).
 %   Estado: Estado del juego (Matriz, Turno, ...).
@@ -26,31 +28,43 @@ minimax(Estado, Maquina, NivelRecusion, Estado, Val) :-
 %   MejorEstado: Mejor estado calculado por el algoritmo.
 %   Valor: Valor numerico del Estado devuelto.
 %   RecursionLevel: Nivel de recusion.
-minimax(Estado, Maquina, NivelRecusion, MejorEstado, Val) :-
-    bagof(EstadoSiguiente, jugada_posible(Estado, EstadoSiguiente), ListaEstadoSiguiente),
-    mejor_estado(ListaEstadoSiguiente, Maquina, MejorEstado, Val, NivelRecusion), !
-    ;
-    evalEstado(MejorEstado, Maquina, Val).     % Pos has no successors -> evaluate the positition
+minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
+    writeln('**************************\nMinimax nivel recursion:' + NivelRecursion),
+    (
+        minimax_depth(NivelRecursion),
+        evalEstado(Estado, Maquina, Val), writeln('minimax - FIN DE RECURSION (nivel: ' + NivelRecursion + '). valor:' + Val), !
+        ;
+        bagof(EstadoSiguiente, jugada_posible(Estado, EstadoSiguiente), ListaEstadoSiguiente),
+        writeln('Se tiene el bag of de estados siguientes'),
+        writeln('**************************\n'),
+        mejor_estado(ListaEstadoSiguiente, Maquina, MejorEstado, Val, NivelRecursion), !
+    ).
 
 /*
     Compara de forma recursiva todos los elementos de la lista.
 */
 
-% mejor_estado(+ListaEstadoSiguiente, +Maquina, -MejorEstado, -Val).
+% mejor_estado(+ListaEstadoSiguiente, +Maquina, -MejorEstado, -Val, +NivelRecursion).
 %   ListaEstadoSiguiente: Lista de estados de jugadas posibles siguientes.
 %   Maquina: Color de la maquina.
 %   MejorEstado: El mejor estado en las condiciones de Minimax (depende del color).
 %   Val: El valor numero del mejor estado.
-mejor_estado([MejorEstado], Maquina, MejorEstado, Val, NivelRecusion) :-
+mejor_estado([MejorEstado], Maquina, MejorEstado, Val, NivelRecursion) :-
     % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
-    SigNivelRecursion is NivelRecusion + 1,
+    writeln('mejor_estado - fin de lista para comparar. Se elige elemento final.'),
+    SigNivelRecursion is NivelRecursion + 1,
     minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val), !. 
 
-mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal) :-
-    SigNivelRecursion is NivelRecusion + 1,
+mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal, NivelRecursion) :-
+    writeln('mejor_estado - comparando lista.'),
+    SigNivelRecursion is NivelRecursion + 1,
     minimax(Estado1, Maquina, SigNivelRecursion, _, Val1),
-    mejor_estado(ListaEstado, Maquina, Estado2, Val2),
-    minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal).
+    writeln('mejor_estado - calculo el valor para el siguiente nivel de recusion:' + Val1),
+    mejor_estado(ListaEstado, Maquina, Estado2, Val2, NivelRecursion),
+    writeln('mejor_estado - el mejor estado del resto de la lista es::' + Val2),
+    writeln('mejor_estado - obtengo mejor estado.'),
+    minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal),
+    writeln('mejor_estado - mejor estado! de mejor estado: ' + MejorVal).
 
 /*
     Evalua dos estados y elige el mejor teniendo en cuenta las condiciones de minimax
@@ -101,9 +115,9 @@ minimo_val(_, _, Estado2, Val2, Estado2, Val2).
 
 % Estado1, Val1 son maximo si:
 maximo_val(Estado1, Val1, _, Val2, Estado1, Val1) :-
-    Val1 => Val2.
+    Val1 >= Val2.
 % else
-maximo_val(_, _, Estado1, Val2, Estado2, Val2).
+maximo_val(_, _, Estado1, Val2, Estado1, Val2).
 
 /*
     Se quiere minimizar la maximizacion del oponente, no?
@@ -117,4 +131,54 @@ maximo_val(_, _, Estado1, Val2, Estado2, Val2).
 se_quiere_minimizar(Maquina, TurnoActual) :-
     Maquina == TurnoActual.
 
+% jugada_posible(+Estado, -EstadoSiguiente)
+jugada_posible(Estado, EstadoSiguiente) :-
+    get_turno(Estado, TurnoActual),
+    obtener_matriz_estado(Estado, MatrizActual),
+    obtener_dimension_matriz(Estado, Dimension),
 
+    % Se copia el estado para no modificar el real.
+    duplicate_term(Estado, EstadoSiguiente),
+    
+    % Cambia de turno.
+    siguiente_turno(TurnoActual, TurnoSiguiente),
+    set_turno(EstadoSiguiente, TurnoSiguiente),
+    % Genera una matriz con una movida.
+    jugada_posible_matriz(MatrizActual, TurnoActual, Dimension, MatrizSiguiente),
+    writeln('jugada_posible - se obtiene matriz con jugada.'),
+    actualizar_matriz(EstadoSiguiente, MatrizSiguiente),
+    evalEstado(EstadoSiguiente, negro, Val), writeln('El valor de la matriz creada es: ' + Val).
+
+% jugada_posible_matriz(+Matriz, +Turno, -MatrizSiguiente)
+jugada_posible_matriz(Matriz, Turno, Dimension, MatrizSiguiente) :-
+    writeln('jugada_posible_matriz - se busca jugada posible.'),
+    % uno u otro, no los dos.
+    %salto_posible(Matriz, Turno, Dimension, MatrizSiguiente), writeln('*jugada_posible_matriz - tengo posible matriz siguiente de salto.');
+    clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente), writeln('*jugada_posible_matriz - tengo posible matriz siguiente de clonacion.').
+
+salto_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
+    writeln('salto_posible - Se busca salto posible.'),
+    % obtengo una posicion X, Y con posible juego.
+    get_val_matriz(Matriz, Turno, Dimension, X, Y),
+    writeln('salto_posible - tengo posible jugador. Posicion:' + (X, Y)),
+    % obtengo posicion L vacio distinto de 2.
+    get_adj_vacios_dist(X, Y, Matriz, Dimension, 2, (Xsalto, Ysalto)),
+    writeln('salto_posible - encuentro posible salto: ' + (Xsalto, Ysalto)),
+    % Se copia la matriz para no modificar la real.
+    duplicate_term(Matriz, MatrizSiguiente),
+    set_cell(X, Y, MatrizSiguiente, vacio),
+    set_cell(Xsalto, Ysalto, MatrizSiguiente, Turno),
+    infect_adj(Xsalto, Ysalto, MatrizSiguiente, Turno), writeln('salto_posible - uardo e infecto la matriz').
+
+
+clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
+    writeln('clonacion_posible - Se busca clonacion posible.'),
+    % obtengo una posicion X, Y con posible juego.
+    get_val_matriz(Matriz, Turno, Dimension, X, Y),
+    writeln('clonacion_posible - tengo posible jugador. Posicion:' + (X, Y)),
+    get_adj_vacios_dist(X, Y, Matriz, Dimension, 1, (Xclon, Yclon)),
+    writeln('clonacion_posible - encuentro posible clon: ' + (Xclon, Yclon)),
+    % Se copia la matriz para no modificar la real.
+    duplicate_term(Matriz, MatrizSiguiente),
+    set_cell(Xclon, Yclon, MatrizSiguiente, Turno),
+    infect_adj(Xclon, Yclon, MatrizSiguiente, Turno), writeln('clonacion_posible - Guardo e infecto la matriz').
