@@ -96,18 +96,28 @@ mismo_turno(Estado1, Estado2) :-
 %   Estado2, Val2: Estado de juego posible 2 y su valor correspondiente.
 %   MejorEstado, MejorVal: Mejor estado y mejor valor en las condiciones de Minimax (Depende del turno de los estados y el color de la maquina).
 minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
-    mismo_turno(Estado1 ,Estado2), % Control de que estamos en el mismo turno.
+	get_turno(Estado1, Turno1),
+	writeln('Turno 1 ' + Turno1),
+    get_turno(Estado1, terminado) -> 
+		(MejorEstado = Estado1,MejorVal = Val1)
+	;
+	(
+	mismo_turno(Estado1 ,Estado2), % Control de que estamos en el mismo turno.
     (
-        get_turno(Estado1, TurnoActual),
-        se_quiere_minimizar(Maquina, TurnoActual),
-        writeln('Se quiere minimizar.' + TurnoActual),
-        minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
-        ;
-        get_turno(Estado1, TurnoActual),
-        writeln('Se quiere maximizar.' + TurnoActual),
-        maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
-    );
-    writeln('&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&\nFUCKING ERROR').
+		(
+			get_turno(Estado1, TurnoActual),
+			se_quiere_minimizar(Maquina, TurnoActual),
+			writeln('Se quiere minimizar.' + TurnoActual),
+			minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
+		)
+		;
+		(
+			get_turno(Estado1, TurnoActual),
+			writeln('Se quiere maximizar.' + TurnoActual),
+			maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
+		)
+	)
+	).
 
 /*
     Calcula un valor numerico a partir de el estado, el color de la maquina.
@@ -130,7 +140,7 @@ evalEstado(Estado, Maquina, Val):-
 % Estado1, Val1 son minimo si:
 minimo_val(_, Val1, Estado2, Val2, Estado3, Val3) :-
     Val2 < Val1, !,
-    Val2 = Val3, Estado2 = Estado3.
+    Val3 = Val2, Estado3 = Estado2.
 % else
 minimo_val(Estado1, Val1, _, _, Estado1, Val1).
 
@@ -140,7 +150,7 @@ minimo_val(Estado1, Val1, _, _, Estado1, Val1).
 
 % Estado1, Val1 son maximo si:
 maximo_val(_, Val1, Estado2, Val2, Estado3, Val3) :-
-    Val1 =< Val2, !, Val2 = Val3, Estado2 = Estado3.
+    Val1 =< Val2, !, Val3 = Val2, Estado3 = Estado2.
 % else
 maximo_val(Estado1, Val1, _, _, Estado1, Val1).
 
@@ -184,19 +194,16 @@ jugada_posible(Estado, TurnoEstado, EstadoSiguiente) :-
     /*writeln('jugada_posible - se obtiene matriz con jugada.'),*/
     actualizar_matriz(EstadoSiguiente, MatrizSiguiente),
     /*writeln('jugada_posible - se actualiza matriz'),*/
-    get_turno(EstadoSiguiente, TurnoSig),
     writeln('2------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
     evalEstado(EstadoSiguiente, TurnoActual, Val),
-    get_turno(EstadoSiguiente, TurnoSig),
     writeln('3------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig).
 
 
 % jugada_posible_matriz(+Matriz, +Turno, -MatrizSiguiente)
 jugada_posible_matriz(Matriz, Turno, Dimension, MatrizSiguiente) :-
-    /*writeln('jugada_posible_matriz - se busca jugada posible.'),*/
     % uno u otro, no los dos.
-    salto_posible(Matriz, Turno, Dimension, MatrizSiguiente);%, writeln('*jugada_posible_matriz - tengo posible matriz siguiente de salto.');
-    clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente).%, writeln('*jugada_posible_matriz - tengo posible matriz siguiente de clonacion.').
+    salto_posible(Matriz, Turno, Dimension, MatrizSiguiente);
+    clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente).
 
 salto_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
     /*writeln('salto_posible - Se busca salto posible.'),*/
