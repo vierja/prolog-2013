@@ -11,17 +11,29 @@
     El contenido de este archivo se puede modificar.
 */
 
-main(Depth) :-
+
+
+	
+main :-
     new(Frame, my_frame('Biencenido a Infectlog Grupo: 12')),
     gr_opciones(Frame, 'Elija el tamaño del tablero:', ['5x5', '6x6', '7x7', '8x8', '9x9'], Resp),
     (
-        Resp == '5x5' -> infectlog(5,Depth);
-        Resp == '6x6' -> infectlog(6,Depth);
-        Resp == '7x7' -> infectlog(7,Depth);
-        Resp == '8x8' -> infectlog(8,Depth);
-        Resp == '9x9' -> infectlog(9,Depth)       
+        Resp == '5x5' -> infectBot(5);
+        Resp == '6x6' -> infectBot(6);
+        Resp == '7x7' -> infectBot(7);
+        Resp == '8x8' -> infectBot(8);
+        Resp == '9x9' -> infectBot(9)      
     ).
 
+infectBot(Dim) :-
+	new(Frame, my_frame('Biencenido a Infectlog Grupo: 12')),
+    gr_opciones(Frame, 'Elija el nivel de dificultad de InfectBot:', ['Easy', 'Medium', 'Hard'], Resp),
+    (
+        Resp == 'Easy' -> infectlog(Dim,2);
+        Resp == 'Medium' -> infectlog(Dim,3);
+        Resp == 'Hard' -> infectlog(Dim,4)    
+    ).
+	
 % infectlog
 infectlog(Dim, Depth) :-
     gr_crear(Visual, [
@@ -30,7 +42,7 @@ infectlog(Dim, Depth) :-
          Dim,Dim),
     estado(Matriz,Dim,blanco,Negras,Blancas,_,Estado),
     dibujar_matriz(Estado, Visual),
-    sformat(Msg, 'Inicio de juego'),
+    sformat(Msg, 'Inicio de juego: Humano(B) vs InfectBot(N)'),
     gr_estado(Visual, Msg),
     loop(Visual, Estado, Depth),
     gr_destruir(Visual).
@@ -43,20 +55,34 @@ loop(Visual, Estado, Depth) :-
     termino_juego(Estado) ->
         obtener_ganador(Estado,Ganador),
         dibujar_matriz(Estado, Visual),
-        atom_concat('Juego terminado, Ganador: ',Ganador,Msg),
+		(
+			Ganador == blanco ->
+			sformat(Msg,'Juego terminado, Ganador: Humano!')
+			;
+			Ganador == negro ->
+			sformat(Msg,'Juego terminado, Ganador: InfectBot!')
+			;
+			sformat(Msg,'Juego terminado, Resultado: Emapte!')
+		),
         gr_estado(Visual, Msg),
         gr_evento(Visual,E),
         evento(E,Visual, Estado, Depth)
         ;
     dibujar_matriz(Estado, Visual),
     turno_maquina(Estado) ->
-		%sformat(Msg, 'Pensando...'),
-		%gr_estado(Visual, Msg),
         minimax(Estado, negro, 0, SigEstado, Valor, Depth),
         % No se como reemplazar al estado.
         writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
 		get_mensaje(SigEstado,Msg2),
 		gr_estado(Visual, Msg2),
+		obtener_matriz_estado(SigEstado,M),
+		(
+			findall(X,get_celdas_valor(M,blanco,X),Blancas),
+			Blancas == [] -> true;
+			tiene_movimiento(SigEstado,blanco)->true;
+			completar_matriz(M),
+			actualizar_estado(SigEstado)
+		),
         loop(Visual, SigEstado, Depth)
     ;
     gr_evento(Visual,E),
@@ -86,6 +112,8 @@ evento(reiniciar,Visual, Estado, Depth) :-
         dibujar_matriz(Estado, Visual),
         set_turno(Estado, blanco),
         actualizar_estado(Estado),
+		sformat(Msg, 'Inicio de juego: Humano(B) vs InfectBot(N)'),
+		gr_estado(Visual, Msg),
         loop(Visual, Estado, Depth)
         ;
         loop(Visual, Estado, Depth)
@@ -168,7 +196,7 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
         set_cell(FilaDest, ColumnaDest, Matriz, Turno),
         gr_ficha(Visual,FilaDest,ColumnaDest, Turno),
         infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
-        atomic_list_concat(['Jugador ', Turno, ' mueve de ', Fila, ',', Columna, ' a ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
+        atomic_list_concat(['Humano mueve de ', Fila, ',', Columna, ' a ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
         gr_estado(Visual, Msg),
         siguiente_turno(Turno, SigTurno),
         set_turno(Estado,SigTurno),
@@ -193,7 +221,7 @@ clone(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
         set_cell(FilaDest, ColumnaDest, Matriz, Turno),
         gr_ficha(Visual,FilaDest,ColumnaDest, Turno),
         infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
-        atomic_list_concat(['Jugador ', Turno, ' clona en ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
+        atomic_list_concat(['Humano clona en ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
         gr_estado(Visual, Msg),
         siguiente_turno(Turno, SigTurno),
         set_turno(Estado,SigTurno),

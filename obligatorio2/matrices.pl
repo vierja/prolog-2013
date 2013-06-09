@@ -1,4 +1,4 @@
-:- module(matrices, [matrix/4, get_cell/4, set_cell/4, count_cells/3, get_num_rows/2, get_num_cols/2, resetear_matriz/1]).
+:- module(matrices, [matrix/4, get_cell/4, set_cell/4, count_cells/3, get_num_rows/2, get_num_cols/2, get_celdas_valor/3, resetear_matriz/1, completar_matriz/1]).
 
 % Crea una matriz X,Y con todos sus valores seteados a Val.
 matrix(X, Y, Val, M) :- 
@@ -91,5 +91,13 @@ resetear_matriz(M) :-
         set_cell(Dim,Dim,M,blanco),
         set_cell(1,Dim,M,negro),
         set_cell(Dim,1,M,negro).
-        
-        
+
+completar_lista([],_).
+completar_lista([pareja((X,Y))|T],M) :-
+	set_cell(X,Y,M,negro),
+	completar_lista(T,M).
+	
+completar_matriz(M) :-
+	findall(X,get_celdas_valor(M,vacio,X),Vacias),
+    completar_lista(Vacias,M).
+	
