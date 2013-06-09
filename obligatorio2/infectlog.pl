@@ -11,69 +11,71 @@
     El contenido de este archivo se puede modificar.
 */
 
-main :-
+main(Depth) :-
     new(Frame, my_frame('Biencenido a Infectlog Grupo: 12')),
-    gr_opciones(Frame, 'Elija el tamaño del tablero:', ['5x5', '6x6', '7x7', '8x8', '9x9'], Resp), 
+    gr_opciones(Frame, 'Elija el tamaño del tablero:', ['5x5', '6x6', '7x7', '8x8', '9x9'], Resp),
     (
-        Resp == '5x5' -> infectlog(5);
-        Resp == '6x6' -> infectlog(6);
-        Resp == '7x7' -> infectlog(7);
-        Resp == '8x8' -> infectlog(8);
-        Resp == '9x9' -> infectlog(9)       
+        Resp == '5x5' -> infectlog(5,Depth);
+        Resp == '6x6' -> infectlog(6,Depth);
+        Resp == '7x7' -> infectlog(7,Depth);
+        Resp == '8x8' -> infectlog(8,Depth);
+        Resp == '9x9' -> infectlog(9,Depth)       
     ).
 
 % infectlog
-infectlog(Dim) :-
+infectlog(Dim, Depth) :-
     gr_crear(Visual, [
              boton('Reiniciar',reiniciar),
              boton('Salir',salir)], % salir puede ser por el boton o por el click en la ventana
          Dim,Dim),
-    estado(Matriz,Dim,blanco,Negras,Blancas,Estado),
+    estado(Matriz,Dim,blanco,Negras,Blancas,_,Estado),
     dibujar_matriz(Estado, Visual),
     sformat(Msg, 'Inicio de juego'),
     gr_estado(Visual, Msg),
-    loop(Visual, Estado),
+    loop(Visual, Estado, Depth),
     gr_destruir(Visual).
 
 turno_maquina(Estado) :-
     get_turno(Estado, negro).
 
-% loop(+Visual, +Estado)
-loop(Visual, Estado) :-
+% loop(+Visual, +Estado, Depth)
+loop(Visual, Estado, Depth) :-
     termino_juego(Estado) ->
         obtener_ganador(Estado,Ganador),
         dibujar_matriz(Estado, Visual),
         atom_concat('Juego terminado, Ganador: ',Ganador,Msg),
         gr_estado(Visual, Msg),
         gr_evento(Visual,E),
-        evento(E,Visual, Estado)
+        evento(E,Visual, Estado, Depth)
         ;
     dibujar_matriz(Estado, Visual),
     turno_maquina(Estado) ->
-        minimax(Estado, negro, 0, SigEstado, Valor),
+        minimax(Estado, negro, 0, SigEstado, Valor, Depth),
         % No se como reemplazar al estado.
         writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
-        loop(Visual, SigEstado)
+		get_mensaje(SigEstado,Msg),
+		gr_estado(Visual, Msg),
+        loop(Visual, SigEstado, Depth)
     ;
     gr_evento(Visual,E),
-    evento(E,Visual, Estado).
+    evento(E,Visual, Estado, Depth).
 
 % evento(+Event,+Visual,+Estado)
-evento(click(Fila,Columna),Visual, Estado) :-
-    termino_juego(Estado) -> loop(Visual, Estado)
+evento(click(Fila,Columna),Visual, Estado, Depth) :-
+    termino_juego(Estado) -> loop(Visual, Estado, Depth)
     ;    
     movimiento(Visual, Fila, Columna, Estado),
-    loop(Visual, Estado).
+    loop(Visual, Estado, Depth).
 
-evento(salir,Visual, Estado) :-
+evento(salir,Visual, Estado, Depth) :-
     (   
         gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí') 
         ->
         true;
-        loop(Visual, Estado)
+        loop(Visual, Estado, Depth)
     ).
     
-evento(reiniciar,Visual, Estado) :-
+evento(reiniciar,Visual, Estado, Depth) :-
     (   
         gr_opciones(Visual, '¿Seguro?', ['Sí', 'No'], 'Sí') 
         ->
@@ -82,9 +84,9 @@ evento(reiniciar,Visual, Estado) :-
         dibujar_matriz(Estado, Visual),
         set_turno(Estado, blanco),
         actualizar_estado(Estado),
-        loop(Visual, Estado)
+        loop(Visual, Estado, Depth)
         ;
-        loop(Visual, Estado)
+        loop(Visual, Estado, Depth)
     ).
 
 
@@ -93,9 +95,11 @@ gr_ficha_lista(Visual,[(X,Y)|T],Imagen) :-
     gr_ficha(Visual,X,Y, Imagen),gr_ficha_lista(Visual,T,Imagen).
 
 movimiento(Visual, Fila, Columna, Estado) :-
-    obtener_matriz_estado(Estado,Matriz),
+	obtener_matriz_estado(Estado,Matriz),
     obtener_dimension_matriz(Estado,Dim),
     get_turno(Estado,Turno),
+	tiene_movimiento(Estado,Turno) ->
+	(
     get_cell(Fila, Columna, Matriz, Val), writeln('Valor en click: ' + Val),
     ( 
         Turno == Val ->
@@ -143,7 +147,14 @@ movimiento(Visual, Fila, Columna, Estado) :-
                 gr_estado(Visual, Msg)
             )
         )
-    ).
+    )
+	)
+	;
+	(
+		siguiente_turno(Turno, SigTurno),
+        set_turno(Estado,SigTurno)
+	)
+	.
 
 jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
     writeln('jump'),

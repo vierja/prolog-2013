@@ -1,9 +1,9 @@
-:- module(estadoJuego, [estado/6, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2, get_count_cells/3, get_count_oponent_cells/3, siguiente_turno/2, actualizar_matriz/2]).
+:- module(estadoJuego, [estado/7, obtener_matriz_estado/2, obtener_dimension_matriz/2, get_turno/2, set_turno/2, actualizar_estado/1, termino_juego/1, obtener_ganador/2, get_count_cells/3, get_count_oponent_cells/3, siguiente_turno/2, actualizar_matriz/2, get_mensaje/2, set_mensaje/2]).
 :- use_module(matrices).
 :- use_module(infect_matriz).
 
 %inicializa_la_estructura_estado
-estado(M,Dim,Turno,Negras,Blancas,Estado) :-
+estado(M,Dim,Turno,Negras,Blancas, Msg,Estado) :-
     init_matriz(Dim,Dim, M),
     count_cells(M, negro, Negras),
     count_cells(M, blanco, Blancas),
@@ -12,7 +12,7 @@ estado(M,Dim,Turno,Negras,Blancas,Estado) :-
         Turno == blanco;
         Turno == terminado
     ),
-    Estado =.. [estado,M,Dim,Turno,Negras,Blancas].
+    Estado =.. [estado,M,Dim,Turno,Negras,Blancas,Msg].
 
 %retorna_la_matriz_correspondiente_al_estado
 obtener_matriz_estado(E,M) :-
@@ -30,6 +30,13 @@ get_turno(E,Turno) :-
 set_turno(E,Turno) :-
     setarg(3,E,Turno).
 
+	
+get_mensaje(E,Msg) :-
+	arg(6,E,Msg).
+	
+set_mensaje(E,Msg) :-
+	setarg(6,E,Msg).
+	
 %actualiza_el_estado_de_la_matriz
 actualizar_estado(E) :-
     obtener_matriz_estado(E,M),

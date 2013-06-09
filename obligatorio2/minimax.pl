@@ -1,10 +1,10 @@
-:- module(minimax, [minimax/5]).
+:- module(minimax, [minimax/6]).
 :- use_module(matrices).
 :- use_module(infect_matriz).
 
 :- use_module(estadoJuego).
 
-minimax_depth(2).
+
 
 /*
     Realiza el algoritmo recursivo de minimax
@@ -28,11 +28,11 @@ minimax_depth(2).
 %   MejorEstado: Mejor estado calculado por el algoritmo.
 %   Valor: Valor numerico del Estado devuelto.
 %   RecursionLevel: Nivel de recusion.
-minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
+minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val, Depth) :-
     get_turno(Estado, TurnoEstado),
     %%writeln('**************************\nMinimax nivel recursion:' + NivelRecursion + ', Maquina: ' + Maquina + ', Turno: ' + TurnoEstado),
     (
-        minimax_depth(NivelRecursion),
+        NivelRecursion == Depth,
         evalEstado(Estado, Maquina, Val), !%%writeln('minimax - FIN DE RECURSION (nivel: ' + NivelRecursion + '). valor:' + Val), !
         ;
         get_turno(Estado, TurnoActual),
@@ -40,7 +40,7 @@ minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
         %%writeln('Se tiene el bag of de estados siguientes'),
         %%writeln('**************************\n'),
         %temp_check_estado(ListaEstadoSiguiente, TurnoSig),
-        mejor_estado(ListaEstadoSiguiente, Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion),
+        mejor_estado(ListaEstadoSiguiente, Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion, Depth),
         !%%writeln('Nivel de recusion: ' + NivelRecursion), get_turno(MejorEstado, TurnoObtenido), writeln('Turno Mejor estado obtenido: ' + TurnoObtenido),!
     ).
 
@@ -53,26 +53,26 @@ minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
 %   Maquina: Color de la maquina.
 %   MejorEstado: El mejor estado en las condiciones de Minimax (depende del color).
 %   Val: El valor numero del mejor estado.
-mejor_estado([MejorEstado], Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion) :-
+mejor_estado([MejorEstado], Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion, Depth) :-
     (
         get_turno(MejorEstado, terminado) ->
             evalEstado(MejorEstado, Maquina, Val)
             ;
         % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
         SigNivelRecursion is NivelRecursion + 1,
-        minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val), !
+        minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val, Depth), !
     ).
 
-mejor_estado([Estado1 | ListaEstado], Maquina, TurnoEstado, MejorEstado, MejorVal, NivelRecursion) :-
+mejor_estado([Estado1 | ListaEstado], Maquina, TurnoEstado, MejorEstado, MejorVal, NivelRecursion, Depth) :-
     (
         get_turno(Estado1, terminado) ->
             evalEstado(Estado1, Maquina, Val1)
             ;
 
         SigNivelRecursion is NivelRecursion + 1,
-        minimax(Estado1, Maquina, SigNivelRecursion, _, Val1)
+        minimax(Estado1, Maquina, SigNivelRecursion, _, Val1, Depth)
     ),
-    mejor_estado(ListaEstado, Maquina, TurnoEstado, Estado2, Val2, NivelRecursion),
+    mejor_estado(ListaEstado, Maquina, TurnoEstado, Estado2, Val2, NivelRecursion, Depth),
     minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal).
     %%writeln('mejor_estado - mejor estado! de mejor estado: ' + MejorVal).
 
@@ -206,7 +206,7 @@ jugada_posible(Estado, TurnoEstado, EstadoSiguiente) :-
     get_turno(EstadoSiguiente, TurnoSig),
     TurnoActual \== TurnoSig,
     %%writeln('1------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
-    jugada_posible_matriz(MatrizActual, TurnoActual, Dimension, MatrizSiguiente),
+    jugada_posible_matriz(MatrizActual, TurnoActual, Dimension, MatrizSiguiente, EstadoSiguiente),
     /*writeln('jugada_posible - se obtiene matriz con jugada.'),*/
     actualizar_matriz(EstadoSiguiente, MatrizSiguiente),
     /*writeln('jugada_posible - se actualiza matriz'),*/
@@ -216,12 +216,12 @@ jugada_posible(Estado, TurnoEstado, EstadoSiguiente) :-
 
 
 % jugada_posible_matriz(+Matriz, +Turno, -MatrizSiguiente)
-jugada_posible_matriz(Matriz, Turno, Dimension, MatrizSiguiente) :-
+jugada_posible_matriz(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
     % uno u otro, no los dos.
-    salto_posible(Matriz, Turno, Dimension, MatrizSiguiente);
-    clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente).
+    salto_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente);
+    clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente).
 
-salto_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
+salto_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
     /*writeln('salto_posible - Se busca salto posible.'),*/
     % obtengo una posicion X, Y con posible juego.
     get_val_matriz(Matriz, Turno, Dimension, X, Y),
@@ -233,10 +233,12 @@ salto_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
     duplicate_term(Matriz, MatrizSiguiente),
     set_cell(X, Y, MatrizSiguiente, vacio),
     set_cell(Xsalto, Ysalto, MatrizSiguiente, Turno),
+	atomic_list_concat(['Jugador ', Turno, ' mueve de ', X, ',', Y, ' a ', Xsalto, ',', Ysalto],Msg),
+	set_mensaje(EstadoSiguiente,Msg),
     infect_adj(Xsalto, Ysalto, MatrizSiguiente, Turno).%, writeln('salto_posible - uardo e infecto la matriz').
 
 
-clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
+clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
     /*writeln('clonacion_posible - Se busca clonacion posible.'),*/
     % obtengo una posicion X, Y con posible juego.
     get_val_matriz(Matriz, Turno, Dimension, X, Y),
@@ -246,4 +248,6 @@ clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente) :-
     % Se copia la matriz para no modificar la real.
     duplicate_term(Matriz, MatrizSiguiente),
     set_cell(Xclon, Yclon, MatrizSiguiente, Turno),
+	atomic_list_concat(['Jugador ', Turno, ' clona en ', Xclon, ',', Yclon],Msg),
+	set_mensaje(EstadoSiguiente,Msg),
     infect_adj(Xclon, Yclon, MatrizSiguiente, Turno).%, writeln('clonacion_posible - Guardo e infecto la matriz').
