@@ -40,41 +40,39 @@ minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
         writeln('Se tiene el bag of de estados siguientes'),
         writeln('**************************\n'),
         %temp_check_estado(ListaEstadoSiguiente, TurnoSig),
-        mejor_estado(ListaEstadoSiguiente, Maquina, MejorEstado, Val, NivelRecursion), !
+        mejor_estado(ListaEstadoSiguiente, Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion), !
     ).
 
 /*
     Compara de forma recursiva todos los elementos de la lista.
 */
 
-temp_check_estado([], _).
-temp_check_estado([Primer | Resto], TurnoSig) :-
-    temp_check_estado(Resto, TurnoSig),
-    get_turno(Primer, Turno), 
-    /*writeln('TurnoSig:' + TurnoSig + ', Turno:' + Turno),*/
-    (
-        TurnoSig \== Turno,
-        writeln('1\n11\n111\n1111\n11111\n111111\n1111111\n11111111\n111111111\n1111111111\n11111111111\n111111111111\n1111111111111\n1111111111111\n111111111111111\n111111111111111\n' + Turno);
-        writeln('ok.')
-    ).
-
 % mejor_estado(+ListaEstadoSiguiente, +Maquina, -MejorEstado, -Val, +NivelRecursion).
 %   ListaEstadoSiguiente: Lista de estados de jugadas posibles siguientes.
 %   Maquina: Color de la maquina.
 %   MejorEstado: El mejor estado en las condiciones de Minimax (depende del color).
 %   Val: El valor numero del mejor estado.
-mejor_estado([MejorEstado], Maquina, MejorEstado, Val, NivelRecursion) :-
-    % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
-    %/*writeln('mejor_estado - fin de lista para comparar. Se elige elemento final.'),*/
-    SigNivelRecursion is NivelRecursion + 1,
-    minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val), !. 
+mejor_estado([MejorEstado], Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion) :-
+    (
+        get_turno(MejorEstado, terminado) ->
+            evalEstado(MejorEstado, Maquina, Val)
+            ;
+        % No importa el siguiente estado del siguiente estado del siguiente estado (etc..). Solo importa el valor.
+        SigNivelRecursion is NivelRecursion + 1,
+        minimax(MejorEstado, Maquina, SigNivelRecursion, _, Val), !
+    ).
 
-mejor_estado([Estado1 | ListaEstado], Maquina, MejorEstado, MejorVal, NivelRecursion) :-
-    %/*writeln('mejor_estado - comparando lista.'),*/
-    SigNivelRecursion is NivelRecursion + 1,
-    minimax(Estado1, Maquina, SigNivelRecursion, _, Val1),
+mejor_estado([Estado1 | ListaEstado], Maquina, TurnoEstado, MejorEstado, MejorVal, NivelRecursion) :-
+    (
+        get_turno(Estado1, terminado) ->
+            evalEstado(Estado1, Maquina, Val1)
+            ;
+
+        SigNivelRecursion is NivelRecursion + 1,
+        minimax(Estado1, Maquina, SigNivelRecursion, _, Val1)
+    ),
     %/*writeln('mejor_estado - calculo el valor para el siguiente nivel de recusion:' + Val1),*/
-    mejor_estado(ListaEstado, Maquina, Estado2, Val2, NivelRecursion),
+    mejor_estado(ListaEstado, Maquina, TurnoEstado, Estado2, Val2, NivelRecursion),
     %/*writeln('mejor_estado - el mejor estado del resto de la lista es::' + Val2),*/
     %/*writeln('mejor_estado - obtengo mejor estado.'),*/
     minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal),
@@ -96,28 +94,28 @@ mismo_turno(Estado1, Estado2) :-
 %   Estado2, Val2: Estado de juego posible 2 y su valor correspondiente.
 %   MejorEstado, MejorVal: Mejor estado y mejor valor en las condiciones de Minimax (Depende del turno de los estados y el color de la maquina).
 minimax_eval(Maquina, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
-	get_turno(Estado1, Turno1),
-	writeln('Turno 1 ' + Turno1),
+    get_turno(Estado1, Turno1),
+    writeln('Turno 1 ' + Turno1),
     get_turno(Estado1, terminado) -> 
-		(MejorEstado = Estado1,MejorVal = Val1)
-	;
-	(
-	mismo_turno(Estado1 ,Estado2), % Control de que estamos en el mismo turno.
+        (MejorEstado = Estado1, MejorVal = Val1)
+    ;
     (
-		(
-			get_turno(Estado1, TurnoActual),
-			se_quiere_minimizar(Maquina, TurnoActual),
-			writeln('Se quiere minimizar.' + TurnoActual),
-			minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
-		)
-		;
-		(
-			get_turno(Estado1, TurnoActual),
-			writeln('Se quiere maximizar.' + TurnoActual),
-			maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
-		)
-	)
-	).
+        mismo_turno(Estado1, Estado2), % Control de que estamos en el mismo turno.
+        (
+            (
+                get_turno(Estado1, TurnoActual),
+                se_quiere_minimizar(Maquina, TurnoActual),
+                writeln('Se quiere minimizar.' + TurnoActual),
+                minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
+            )
+            ;
+            (
+                get_turno(Estado1, TurnoActual),
+                writeln('Se quiere maximizar.' + TurnoActual),
+                maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
+            )
+        )
+    ).
 
 /*
     Calcula un valor numerico a partir de el estado, el color de la maquina.
