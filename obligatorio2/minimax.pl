@@ -30,18 +30,18 @@ minimax_depth(2).
 %   RecursionLevel: Nivel de recusion.
 minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val) :-
     get_turno(Estado, TurnoEstado),
-    writeln('**************************\nMinimax nivel recursion:' + NivelRecursion + ', Maquina: ' + Maquina + ', Turno: ' + TurnoEstado),
+    %%writeln('**************************\nMinimax nivel recursion:' + NivelRecursion + ', Maquina: ' + Maquina + ', Turno: ' + TurnoEstado),
     (
         minimax_depth(NivelRecursion),
-        evalEstado(Estado, Maquina, Val), writeln('minimax - FIN DE RECURSION (nivel: ' + NivelRecursion + '). valor:' + Val), !
+        evalEstado(Estado, Maquina, Val), !%%writeln('minimax - FIN DE RECURSION (nivel: ' + NivelRecursion + '). valor:' + Val), !
         ;
         get_turno(Estado, TurnoActual),
         bagof(EstadoSiguiente, jugada_posible(Estado, TurnoEstado, EstadoSiguiente), ListaEstadoSiguiente),
-        writeln('Se tiene el bag of de estados siguientes'),
-        writeln('**************************\n'),
+        %%writeln('Se tiene el bag of de estados siguientes'),
+        %%writeln('**************************\n'),
         %temp_check_estado(ListaEstadoSiguiente, TurnoSig),
         mejor_estado(ListaEstadoSiguiente, Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion),
-        writeln('Nivel de recusion: ' + NivelRecursion), get_turno(MejorEstado, TurnoObtenido), writeln('Turno Mejor estado obtenido: ' + TurnoObtenido),!
+        !%%writeln('Nivel de recusion: ' + NivelRecursion), get_turno(MejorEstado, TurnoObtenido), writeln('Turno Mejor estado obtenido: ' + TurnoObtenido),!
     ).
 
 /*
@@ -73,8 +73,8 @@ mejor_estado([Estado1 | ListaEstado], Maquina, TurnoEstado, MejorEstado, MejorVa
         minimax(Estado1, Maquina, SigNivelRecursion, _, Val1)
     ),
     mejor_estado(ListaEstado, Maquina, TurnoEstado, Estado2, Val2, NivelRecursion),
-    minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal),
-    writeln('mejor_estado - mejor estado! de mejor estado: ' + MejorVal).
+    minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal).
+    %%writeln('mejor_estado - mejor estado! de mejor estado: ' + MejorVal).
 
 
 mismo_turno(Estado1, Estado2) :-
@@ -117,12 +117,12 @@ minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, Me
     (
         (
             se_quiere_minimizar(Maquina, TurnoEstado),
-            writeln('Se quiere minimizar.' + TurnoEstado),
+            %%writeln('Se quiere minimizar.' + TurnoEstado),
             minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         )
         ;
         (
-            writeln('Se quiere maximizar.' + TurnoEstado),
+            %%writeln('Se quiere maximizar.' + TurnoEstado),
             maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         )
     ).%; writeln('Otra vez este error')
@@ -188,9 +188,9 @@ print_turno_estado(Nombre, Estado) :-
 
 % jugada_posible(+Estado, -EstadoSiguiente)
 jugada_posible(Estado, TurnoEstado, EstadoSiguiente) :-
-    writeln('jugada_posible'),
+    %%writeln('jugada_posible'),
     get_turno(Estado, TurnoActual),
-    writeln('Turno del Estado: ' + TurnoActual + '. TurnoEstado: ' + TurnoEstado),
+    %%writeln('Turno del Estado: ' + TurnoActual + '. TurnoEstado: ' + TurnoEstado),
 
     obtener_matriz_estado(Estado, MatrizActual),
     obtener_dimension_matriz(Estado, Dimension),
@@ -205,14 +205,14 @@ jugada_posible(Estado, TurnoEstado, EstadoSiguiente) :-
     % Genera una matriz con una movida.
     get_turno(EstadoSiguiente, TurnoSig),
     TurnoActual \== TurnoSig,
-    writeln('1------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
+    %%writeln('1------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
     jugada_posible_matriz(MatrizActual, TurnoActual, Dimension, MatrizSiguiente),
     /*writeln('jugada_posible - se obtiene matriz con jugada.'),*/
     actualizar_matriz(EstadoSiguiente, MatrizSiguiente),
     /*writeln('jugada_posible - se actualiza matriz'),*/
-    writeln('2------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
-    evalEstado(EstadoSiguiente, TurnoActual, Val),
-    writeln('3------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig).
+    %%writeln('2------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
+    evalEstado(EstadoSiguiente, TurnoActual, Val).
+    %%writeln('3------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig).
 
 
 % jugada_posible_matriz(+Matriz, +Turno, -MatrizSiguiente)

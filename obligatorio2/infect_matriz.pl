@@ -84,18 +84,18 @@ distance(X1, Y1, X2, Y2, Distance) :-
 
 
 infect_adj(X, Y, M, Val) :-
-    writeln('Infect adyacentes.'),
+    %%writeln('Infect adyacentes.'),
     findall(L, get_adj_pos_oposite_value(X, Y, M, Val, L), List),
-    writeln('Lista de adyacentes:' + List),
+    %%writeln('Lista de adyacentes:' + List),
     infect_list(List, M, Val).
 
 
 infect_list([], _, _).
 infect_list([H | T], M, Val) :-
     infect_list(T, M, Val),
-    writeln('Infecto posicion: ' + H),
+    %%writeln('Infecto posicion: ' + H),
     H =.. [pos, Xval, Yval],
-    writeln('Los valores X=' + Xval + ', Y=' + Yval),
+    %%writeln('Los valores X=' + Xval + ', Y=' + Yval),
     set_cell(Xval, Yval, M, Val).
 
 /*get_pareja_valor(M, Val) :-
@@ -132,10 +132,10 @@ get_adj_vacios_dist(X,Y,Matriz,Dim,Dist,L) :-
     L = (Xval,Yval).
 
 get_val_matriz(Matriz, Turno, Dimension, X, Y) :-
-    writeln('Se busca color:' + Turno),
-    writeln('get_val_matriz -  Dimension:' + Dimension),
+    %%writeln('Se busca color:' + Turno),
+    %%writeln('get_val_matriz -  Dimension:' + Dimension),
     between(1, Dimension, X),
     between(1, Dimension, Y),
     get_cell(X, Y, Matriz, IsTurno),
-    writeln('get_val_matriz - X = "' + X + '", Y ="' + Y + '. tiene valor ' + IsTurno),
+    %%writeln('get_val_matriz - X = "' + X + '", Y ="' + Y + '. tiene valor ' + IsTurno),
     Turno == IsTurno.
