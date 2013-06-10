@@ -50,8 +50,8 @@ loop(Visual, Estado, Depth) :-
         ;
     dibujar_matriz(Estado, Visual),
     turno_maquina(Estado) ->
-		sformat(Msg, 'Pensando...'),
-		gr_estado(Visual, Msg),
+		%sformat(Msg, 'Pensando...'),
+		%gr_estado(Visual, Msg),
         minimax(Estado, negro, 0, SigEstado, Valor, Depth),
         % No se como reemplazar al estado.
         writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
@@ -168,7 +168,7 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
         set_cell(FilaDest, ColumnaDest, Matriz, Turno),
         gr_ficha(Visual,FilaDest,ColumnaDest, Turno),
         infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
-        atomic_list_concat(['Jugador ', Turno, ' mueve de ', Fila, ',', Columna, ' a ', FilaDest, ',', ColumnaDest],Msg),
+        atomic_list_concat(['Jugador ', Turno, ' mueve de ', Fila, ',', Columna, ' a ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
         gr_estado(Visual, Msg),
         siguiente_turno(Turno, SigTurno),
         set_turno(Estado,SigTurno),
@@ -193,7 +193,7 @@ clone(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
         set_cell(FilaDest, ColumnaDest, Matriz, Turno),
         gr_ficha(Visual,FilaDest,ColumnaDest, Turno),
         infect_adj(FilaDest, ColumnaDest, Matriz, Turno),
-        atomic_list_concat(['Jugador ', Turno, ' clona en ', FilaDest, ',', ColumnaDest],Msg),
+        atomic_list_concat(['Jugador ', Turno, ' clona en ', FilaDest, ',', ColumnaDest,'   Pensando...'],Msg),
         gr_estado(Visual, Msg),
         siguiente_turno(Turno, SigTurno),
         set_turno(Estado,SigTurno),
