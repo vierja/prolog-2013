@@ -50,11 +50,13 @@ loop(Visual, Estado, Depth) :-
         ;
     dibujar_matriz(Estado, Visual),
     turno_maquina(Estado) ->
+		sformat(Msg, 'Pensando...'),
+		gr_estado(Visual, Msg),
         minimax(Estado, negro, 0, SigEstado, Valor, Depth),
         % No se como reemplazar al estado.
         writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
-		get_mensaje(SigEstado,Msg),
-		gr_estado(Visual, Msg),
+		get_mensaje(SigEstado,Msg2),
+		gr_estado(Visual, Msg2),
         loop(Visual, SigEstado, Depth)
     ;
     gr_evento(Visual,E),
