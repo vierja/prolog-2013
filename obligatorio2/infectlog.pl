@@ -10,9 +10,6 @@
     entender el uso de graficos.pl
     El contenido de este archivo se puede modificar.
 */
-
-
-
 	
 main :-
     new(Frame, my_frame('Biencenido a Infectlog Grupo: 12')),

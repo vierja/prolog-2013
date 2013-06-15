@@ -24,7 +24,7 @@ minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val, Depth) :-
         get_turno(Estado, TurnoActual),
         bagof(EstadoSiguiente, jugada_posible(Estado, TurnoEstado, NivelRecursion, EstadoSiguiente), ListaEstadoSiguiente),
         mejor_estado(ListaEstadoSiguiente, Maquina, TurnoEstado, MejorEstado, Val, NivelRecursion, Depth),
-        !%%writeln('Nivel de recusion: ' + NivelRecursion), get_turno(MejorEstado, TurnoObtenido), writeln('Turno Mejor estado obtenido: ' + TurnoObtenido),!
+        !
     ).
 
 /*
@@ -89,7 +89,6 @@ mismo_turno(Estado1, Estado2) :-
 %   MejorEstado, MejorVal: Mejor estado y mejor valor en las condiciones de Minimax (Depende del turno de los estados y el color de la maquina).
 minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal) :-
 
-    %mismo_turno(Estado1, Estado2), % Control de que estamos en el mismo turno.
     (
         (
             se_quiere_minimizar(Maquina, TurnoEstado),
@@ -101,7 +100,7 @@ minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, Me
             %%writeln('Se quiere maximizar.' + TurnoEstado),
             maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         )
-    ).%; writeln('Otra vez este error')
+    ).
 
 /*
     Calcula un valor numerico a partir de el estado, el color de la maquina.
@@ -172,9 +171,7 @@ print_turno_estado(Nombre, Estado) :-
 
 % jugada_posible(+Estado, -EstadoSiguiente)
 jugada_posible(Estado, TurnoEstado, NivelRecursion, EstadoSiguiente) :-
-    %%writeln('jugada_posible'),
     get_turno(Estado, TurnoActual),
-    %%writeln('Turno del Estado: ' + TurnoActual + '. TurnoEstado: ' + TurnoEstado),
 
     obtener_matriz_estado(Estado, MatrizActual),
     obtener_dimension_matriz(Estado, Dimension),
@@ -189,14 +186,9 @@ jugada_posible(Estado, TurnoEstado, NivelRecursion, EstadoSiguiente) :-
     % Genera una matriz con una movida.
     get_turno(EstadoSiguiente, TurnoSig),
     TurnoActual \== TurnoSig,
-    %%writeln('1------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
     jugada_posible_matriz(MatrizActual, TurnoActual, Dimension, MatrizSiguiente, EstadoSiguiente),
-    /*writeln('jugada_posible - se obtiene matriz con jugada.'),*/
     actualizar_matriz(EstadoSiguiente, MatrizSiguiente),
-    /*writeln('jugada_posible - se actualiza matriz'),*/
-    %%writeln('2------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig),
     evalEstado(EstadoSiguiente, TurnoActual, Val, NivelRecursion).
-    %%writeln('3------> El valor de la matriz creada para el turno ' + TurnoActual + ' es: ' + Val + '. El turno siguiente es:' + TurnoSig).
 
 
 % jugada_posible_matriz(+Matriz, +Turno, -MatrizSiguiente)
@@ -206,13 +198,10 @@ jugada_posible_matriz(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente
     clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente).
 
 salto_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
-    /*writeln('salto_posible - Se busca salto posible.'),*/
     % obtengo una posicion X, Y con posible juego.
     get_val_matriz(Matriz, Turno, Dimension, X, Y),
-    /*writeln('salto_posible - tengo posible jugador. Posicion:' + (X, Y)),*/
     % obtengo posicion L vacio distinto de 2.
     get_adj_vacios_dist(X, Y, Matriz, Dimension, 2, (Xsalto, Ysalto)),
-    /*writeln('salto_posible - encuentro posible salto: ' + (Xsalto, Ysalto)),*/
     % Se copia la matriz para no modificar la real.
     duplicate_term(Matriz, MatrizSiguiente),
     set_cell(X, Y, MatrizSiguiente, vacio),
@@ -223,15 +212,12 @@ salto_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
 
 
 clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
-    /*writeln('clonacion_posible - Se busca clonacion posible.'),*/
     % obtengo una posicion X, Y con posible juego.
     get_val_matriz(Matriz, Turno, Dimension, X, Y),
-    /*writeln('clonacion_posible - tengo posible jugador. Posicion:' + (X, Y)),*/
     get_adj_vacios_dist(X, Y, Matriz, Dimension, 1, (Xclon, Yclon)),
-    /*writeln('clonacion_posible - encuentro posible clon: ' + (Xclon, Yclon)),*/
     % Se copia la matriz para no modificar la real.
     duplicate_term(Matriz, MatrizSiguiente),
     set_cell(Xclon, Yclon, MatrizSiguiente, Turno),
 	atomic_list_concat(['InfectBot clona en ', Xclon, ',', Yclon],Msg),
 	set_mensaje(EstadoSiguiente,Msg),
-    infect_adj(Xclon, Yclon, MatrizSiguiente, Turno).%, writeln('clonacion_posible - Guardo e infecto la matriz').
+    infect_adj(Xclon, Yclon, MatrizSiguiente, Turno).
