@@ -8,3 +8,7 @@ Integrantes:
 - Bruno Olivera ([@BrunoOlivera](https://github.com/BrunoOlivera))
 - Javier Rey ([@vierja](https://github.com/vierja))
 
+
+Letras:
+- [Letra del obligatorio 1](https://github.com/vierja/prolog-2013/blob/master/obligatorio1/letra.pdf)
+- [Letra del obligatorio 2](https://github.com/vierja/prolog-2013/blob/master/obligatorio2/letra.pdf)
