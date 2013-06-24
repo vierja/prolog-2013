@@ -69,7 +69,6 @@ loop(Visual, Estado, Depth) :-
     turno_maquina(Estado) ->
         minimax(Estado, negro, 0, SigEstado, Valor, Depth),
         % No se como reemplazar al estado.
-        writeln('===================================\nObtengo resultado de minimax. Valor: ' + Valor + '\n==================================='),
 		get_mensaje(SigEstado,Msg2),
 		gr_estado(Visual, Msg2),
 		obtener_matriz_estado(SigEstado,M),

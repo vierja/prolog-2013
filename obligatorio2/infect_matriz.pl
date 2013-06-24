@@ -132,10 +132,7 @@ get_adj_vacios_dist(X,Y,Matriz,Dim,Dist,L) :-
     L = (Xval,Yval).
 
 get_val_matriz(Matriz, Turno, Dimension, X, Y) :-
-    %%writeln('Se busca color:' + Turno),
-    %%writeln('get_val_matriz -  Dimension:' + Dimension),
     between(1, Dimension, X),
     between(1, Dimension, Y),
     get_cell(X, Y, Matriz, IsTurno),
-    %%writeln('get_val_matriz - X = "' + X + '", Y ="' + Y + '. tiene valor ' + IsTurno),
     Turno == IsTurno.
