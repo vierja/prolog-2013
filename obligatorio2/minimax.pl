@@ -19,7 +19,7 @@ minimax(Estado, Maquina, NivelRecursion, MejorEstado, Val, Depth) :-
     get_turno(Estado, TurnoEstado),
     (
         NivelRecursion == Depth,
-        evalEstado(Estado, Maquina, Val, NivelRecursion), !%%writeln('minimax - FIN DE RECURSION (nivel: ' + NivelRecursion + '). valor:' + Val), !
+        evalEstado(Estado, Maquina, Val, NivelRecursion), !
         ;
         get_turno(Estado, TurnoActual),
         bagof(EstadoSiguiente, jugada_posible(Estado, TurnoEstado, NivelRecursion, EstadoSiguiente), ListaEstadoSiguiente),
@@ -92,12 +92,10 @@ minimax_eval(Maquina, TurnoEstado, Estado1, Val1, Estado2, Val2, MejorEstado, Me
     (
         (
             se_quiere_minimizar(Maquina, TurnoEstado),
-            %%writeln('Se quiere minimizar.' + TurnoEstado),
             minimo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         )
         ;
         (
-            %%writeln('Se quiere maximizar.' + TurnoEstado),
             maximo_val(Estado1, Val1, Estado2, Val2, MejorEstado, MejorVal)
         )
     ).
@@ -165,10 +163,6 @@ maximo_val(Estado1, Val1, _, _, Estado1, Val1).
 se_quiere_minimizar(Maquina, TurnoActual) :-
     Maquina \== TurnoActual.
 
-print_turno_estado(Nombre, Estado) :-
-    get_turno(Estado, Turno),
-    writeln(Nombre + Turno).
-
 % jugada_posible(+Estado, -EstadoSiguiente)
 jugada_posible(Estado, TurnoEstado, NivelRecursion, EstadoSiguiente) :-
     get_turno(Estado, TurnoActual),
@@ -208,7 +202,7 @@ salto_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-
     set_cell(Xsalto, Ysalto, MatrizSiguiente, Turno),
 	atomic_list_concat(['InfectBot mueve de ', X, ',', Y, ' a ', Xsalto, ',', Ysalto],Msg),
 	set_mensaje(EstadoSiguiente,Msg),
-    infect_adj(Xsalto, Ysalto, MatrizSiguiente, Turno).%, writeln('salto_posible - uardo e infecto la matriz').
+    infect_adj(Xsalto, Ysalto, MatrizSiguiente, Turno).
 
 
 clonacion_posible(Matriz, Turno, Dimension, MatrizSiguiente, EstadoSiguiente) :-

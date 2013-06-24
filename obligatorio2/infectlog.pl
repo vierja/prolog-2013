@@ -126,7 +126,7 @@ movimiento(Visual, Fila, Columna, Estado) :-
     get_turno(Estado,Turno),
 	tiene_movimiento(Estado,Turno) ->
 	(
-    get_cell(Fila, Columna, Matriz, Val), writeln('Valor en click: ' + Val),
+    get_cell(Fila, Columna, Matriz, Val),
     ( 
         Turno == Val ->
         (
@@ -140,7 +140,6 @@ movimiento(Visual, Fila, Columna, Estado) :-
         ),
         (
             gr_evento(Visual, click(FilaDest,ColumnaDest)), 
-            writeln('Posicion segundo click: ' + '(' + FilaDest +','+ ColumnaDest+')'),
             distance(Fila,Columna,FilaDest,ColumnaDest,Distancia),
             get_cell(FilaDest, ColumnaDest, Matriz, DestVal),
             (
@@ -183,7 +182,6 @@ movimiento(Visual, Fila, Columna, Estado) :-
 	.
 
 jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
-    writeln('jump'),
     obtener_matriz_estado(Estado,Matriz),
     get_turno(Estado,Turno),
     (   
@@ -210,7 +208,6 @@ jump(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
 
 
 clone(Visual, Fila, Columna, FilaDest, ColumnaDest, Estado) :-
-    writeln('clone'),
     obtener_matriz_estado(Estado,Matriz),
     get_turno(Estado,Turno),
     (       

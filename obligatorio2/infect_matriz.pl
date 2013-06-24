@@ -42,7 +42,6 @@ get_adj_value(X, Y, M, L) :-
     between(Ymin, Ymax, Yval),
     get_cell(Xval, Yval, M, L).
 
-    %TODO: FALTA EL CHEQUEO PARA QUE NO DEVUELVA EL VALOR DE X,Y
 
 % Obtiene un valor de adyacente a (X,Y) en la matriz M, a distancia Dist.
 
@@ -75,7 +74,6 @@ get_adj_pos_oposite_value(X, Y, M, Value, L) :-
 
     L =.. [pos, Xval, Yval].
 
-    %TODO: FALTA EL CHEQUEO PARA QUE NO DEVUELVA EL VALOR DE X,Y
 
 distance(X1, Y1, X2, Y2, Distance) :-
     Xdif = abs(X1 - X2),
@@ -84,22 +82,15 @@ distance(X1, Y1, X2, Y2, Distance) :-
 
 
 infect_adj(X, Y, M, Val) :-
-    %%writeln('Infect adyacentes.'),
     findall(L, get_adj_pos_oposite_value(X, Y, M, Val, L), List),
-    %%writeln('Lista de adyacentes:' + List),
     infect_list(List, M, Val).
 
 
 infect_list([], _, _).
 infect_list([H | T], M, Val) :-
     infect_list(T, M, Val),
-    %%writeln('Infecto posicion: ' + H),
     H =.. [pos, Xval, Yval],
-    %%writeln('Los valores X=' + Xval + ', Y=' + Yval),
     set_cell(Xval, Yval, M, Val).
-
-/*get_pareja_valor(M, Val) :-
-    findall(X, get_celdas_valor(M, Val, X), L).*/
     
 get_adj_value_dist(X, Y, Matriz, Dim, Dist, L) :-
     Xmen is X-Dist,
